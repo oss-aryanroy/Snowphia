@@ -97,8 +97,7 @@ class ImageEndpoint:
         if session and not isinstance(session, aiohttp.ClientSession):
             self.session = None
 
-    @staticmethod
-    def get_correct_object(byte: bytes):
+    def get_correct_object(self, byte: bytes):
         if self.io:
             return BytesIO(byte)
         return byte
