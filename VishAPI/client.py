@@ -1,4 +1,3 @@
-import json
 import aiohttp
 from io import BytesIO
 from VishAPI.exceptions import APIException, NotExist
