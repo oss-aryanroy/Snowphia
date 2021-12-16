@@ -4,7 +4,7 @@ from VishAPI.exceptions import APIException, NotExist
 from VishAPI.objects import Character, Image
 
 
-def handle_exception(response):
+async def handle_exception(response):
     if response.status not in range(200, 299):
         try:
             result = await response.json()
@@ -68,14 +68,14 @@ class GenshinEndpoint:
         if not self.session:
             async with aiohttp.ClientSession() as session:
                 async with session.get(base_url, params=kwargs, headers=headers) as response:
-                    handle_exception(response)
+                    await handle_exception(response)
                     json_obj = await response.json()
                     if raw:
                         return json_obj
                     return func(json_obj)
         else:
             async with self.session.get(base_url, params=kwargs, headers=headers) as response:
-                handle_exception(response)
+                await handle_exception(response)
                 json_obj = await response.json()
                 if raw:
                     return json_obj
@@ -109,11 +109,11 @@ class ImageEndpoint:
         if not self.session:
             async with aiohttp.ClientSession() as session:
                 async with session.get(base_url, params=kwargs, headers=headers) as response:
-                    handle_exception(response)
+                    await handle_exception(response)
                     bytes_obj = await response.read()
                     return self.get_correct_object(bytes_obj)
         else:
             async with self.session.get(base_url, params=kwargs, headers=headers) as response:
-                handle_exception(response)
+                await handle_exception(response)
                 bytes_obj = await response.read()
                 return self.get_correct_object(bytes_obj)

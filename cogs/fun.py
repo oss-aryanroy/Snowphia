@@ -15,7 +15,7 @@ class Fun(commands.Cog):
     async def solarize(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Solarized image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -25,7 +25,7 @@ class Fun(commands.Cog):
     async def invert(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Inverted image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -35,7 +35,7 @@ class Fun(commands.Cog):
     async def blur(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Blurred image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -45,7 +45,7 @@ class Fun(commands.Cog):
     async def emboss(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Embossed image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -55,7 +55,7 @@ class Fun(commands.Cog):
     async def frostedglass(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Frosted Glassed image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -65,7 +65,7 @@ class Fun(commands.Cog):
     async def mirror(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Mirrored image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -75,7 +75,7 @@ class Fun(commands.Cog):
     async def lego(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Lego-ed image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -85,7 +85,7 @@ class Fun(commands.Cog):
     async def oil(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Oil Painted image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -95,7 +95,7 @@ class Fun(commands.Cog):
     async def flip(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Flipped image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -105,7 +105,7 @@ class Fun(commands.Cog):
     async def halftone(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
         member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar)
+        image = await self.image.request(ctx.command.name, url=avatar)
         embed = discord.Embed(title=f'Halftoned image of {member.display_name}')
         embed.set_image(f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
@@ -126,7 +126,7 @@ class Fun(commands.Cog):
                 f"An Inappropriate Gradient was passed, use `{ctx.prefix}gradient list` to check all gradients possible")
         member = member if isinstance(member, (discord.Member, discord.User)) else ctx.author or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        image = self.image.request(ctx.command.name, url=avatar, filter=gradient)
+        image = await self.image.request(ctx.command.name, url=avatar, filter=gradient)
         embed = discord.Embed(title=f'Image of {member.display_name} with {gradient} Filter')
         embed.set_footer(text=f"User {ctx.prefix}filter list to get a list of all the filters")
         embed.set_image(f"attachment://{ctx.command.name}.png")
