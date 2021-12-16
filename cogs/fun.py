@@ -125,7 +125,7 @@ class Fun(commands.Cog):
                    "perfume, serenity "
         new_possibles = possible.split(', ')
         if gradient == "list":
-            actual = ', '.join([f"`{text}`" for text in possible.split(', ')])
+            actual = ', '.join([f"`{text.strip()}`" for text in possible.split(', ')])
             return await ctx.reply(f"Here are all the possible gradients: {actual}\n**Default:** `oceanic`")
         if gradient not in new_possibles:
             return await ctx.send(
