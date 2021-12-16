@@ -13,6 +13,7 @@ from discord.ext import commands
 from discord.utils import _URL_REGEX
 from typing import Union
 
+
 class MyUtils(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -25,7 +26,8 @@ class MyUtils(commands.Cog):
         embed = discord.Embed(title='Showing avatar for {}'.format(member.name))
         embed.set_image(url=member.display_avatar.replace(size=1024).url)
         animated = ['png', 'jpg', 'jpeg', 'webp' if not member.display_avatar.is_animated() else 'gif']
-        embed.description = " | ".join([f"[{x.upper()}]({member.display_avatar.replace(format=x, size=1024).url})" for x in animated])
+        embed.description = " | ".join(
+            [f"[{x.upper()}]({member.display_avatar.replace(format=x, size=1024).url})" for x in animated])
         await ctx.reply(embed=embed, mention_author=False)
 
     @commands.command(help="Checks the bot's ping to Discord")
@@ -70,7 +72,8 @@ class MyUtils(commands.Cog):
         url = url or ctx.author
         base_url = "https://api.openrobot.xyz/api/nsfw-check"
         if isinstance(url, (discord.Member, discord.User)):
-            session = await self.client.session.get(base_url, headers={"Authorization": config.OPEN_API}, params={"url": url.avatar.url})
+            session = await self.client.session.get(base_url, headers={"Authorization": config.OPEN_API},
+                                                    params={"url": url.avatar.url})
             response: dict = await session.json()
         else:
             regex = _URL_REGEX
@@ -78,14 +81,15 @@ class MyUtils(commands.Cog):
             if found:
                 url = found[0].replace('<', '').replace('>', '')
                 print(url)
-                session = await self.client.session.get(base_url, headers={"Authorization": config.OPEN_API}, params={"url": url})
+                session = await self.client.session.get(base_url, headers={"Authorization": config.OPEN_API},
+                                                        params={"url": url})
                 response: dict = await session.json()
             else:
                 return await ctx.reply("Invalid argument detected")
         avatar: str = response.get('image_url')
         if not avatar:
             avatar: str = url.avatar.url if isinstance(url, (discord.Member, discord.User)) else url
-        nsfw_score: int = round(response['nsfw_score']*100, 3)
+        nsfw_score: int = round(response['nsfw_score'] * 100, 3)
         remainder = round(100 - nsfw_score, 3)
         embed = discord.Embed(title="NSFW Score", color=self.client.theme, timestamp=datetime.utcnow())
         embed.add_field(name="<:dnd:915110652958363668> Not Safe", value=f"**`{nsfw_score}`**")
@@ -281,11 +285,11 @@ class MyUtils(commands.Cog):
             case points if len(points) > 250:
                 return await ctx.reply('You can\'t input more than 250 points')
             case points if len(points) < 4:
-                return await ctx.reply('You are supposed to mention at least 4 points to plot a graph!', mention_author=False)
+                return await ctx.reply('You are supposed to mention at least 4 points to plot a graph!',
+                                       mention_author=False)
         filen = await get_graph(self.client, *points)
         view = ButtonDelete(ctx)
         await ctx.send(file=filen, view=view)
-
 
     @commands.command(aliases=['sp'])
     @commands.cooldown(5, 60.0, type=commands.BucketType.user)
@@ -297,12 +301,11 @@ class MyUtils(commands.Cog):
             if not embed:
                 if member == ctx.author:
                     return await ctx.send(f"You are currently not listening to spotify!", mention_author=False)
-                return await ctx.reply(f"{member.mention} is not listening to Spotify", mention_author=False, allowed_mentions=discord.AllowedMentions(users=False))
+                return await ctx.reply(f"{member.mention} is not listening to Spotify", mention_author=False,
+                                       allowed_mentions=discord.AllowedMentions(users=False))
             activity = discord.utils.find(lambda activity: isinstance(activity, discord.Spotify), member.activities)
             view = SpotifyButton(ctx, activity)
             view.message = await ctx.send(embed=embed[0], file=embed[1], view=view)
-
-
 
 
 def setup(client):

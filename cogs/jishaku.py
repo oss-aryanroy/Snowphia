@@ -8,10 +8,8 @@ import humanize
 import discord
 
 
-
-
 class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
-    
+
     @Feature.Command(name="jishaku", aliases=["jsk"], invoke_without_command=True, ignore_extra=False)
     async def jsk(self, ctx):
         """
@@ -33,7 +31,7 @@ class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             with proc.oneshot():
                 try:
                     mem = proc.memory_full_info()
-                    
+
                     summary.append(
                         f"This process is using {humanize.naturalsize(mem.rss)} physical memory!"
                         f"\n{humanize.naturalsize(mem.vms)} virtual memory, "
@@ -62,7 +60,7 @@ class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             if len(self.bot.shards) > 20:
                 summary.append(
                     f"This bot is automatically sharded ({len(self.bot.shards)} shards of {self.bot.shard_count})"
-                    #f" and can see {cache_summary}"
+                    # f" and can see {cache_summary}"
                 )
             else:
                 shard_ids = ', '.join(str(i) for i in self.bot.shards.keys())
@@ -88,12 +86,13 @@ class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             guild_subscriptions = f"`guild subscriptions` are `{'enabled' if guild_subs else 'disabled'}`"
             summary.append(f"{message_cache} and {guild_subscriptions}.")
         summary.append("")
-        jishaku_embed = discord.Embed(description="\n".join(summary),color=0x00ffb3)
-        jishaku_embed.set_author(name="Jishaku",icon_url=ctx.me.display_avatar.url)
+        jishaku_embed = discord.Embed(description="\n".join(summary), color=0x00ffb3)
+        jishaku_embed.set_author(name="Jishaku", icon_url=ctx.me.display_avatar.url)
         jishaku_embed.set_footer(text=f"Average websocket latency: {round(self.bot.latency * 1000)}ms",
                                  icon_url=ctx.author.display_avatar.url)
         jishaku_embed.timestamp = discord.utils.utcnow()
-        await ctx.reply(embed=jishaku_embed,mention_author=False,view=ButtonDelete(ctx))
+        await ctx.reply(embed=jishaku_embed, mention_author=False, view=ButtonDelete(ctx))
+
 
 def setup(client):
     client.add_cog(Jishaku(bot=client))

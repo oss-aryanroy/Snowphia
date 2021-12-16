@@ -16,12 +16,18 @@ def handle_exception(response):
         raise APIException(response, status=code)
 
 
+__all__ = ('GenshinEndpoint', 'ImageEndpoint')
+
+
 class GenshinEndpoint:
     __slots__ = ('api_key', 'session', '_key_check')
 
     def __init__(self, *, api_key: str, session: aiohttp.ClientSession = None) -> None:
+        """
+        Helper class for getting Genshin Impact object Information from Kozumikku API
+        """
         self.api_key: str = api_key
-        self._key_check = {
+        self._key_check: dict = {
             "character": self.character_arrange_dict,
             "weapon": self.weapon_arrange_dict,
             "artifact": self.artifact_arrange_dict
@@ -31,15 +37,15 @@ class GenshinEndpoint:
             self.session = None
 
     @staticmethod
-    async def artifact_arrange_dict(json_obj: dict):
+    async def artifact_arrange_dict(json_obj: dict) -> None:
         raise NotImplementedError("Requested endpoint has not been developed yet")
 
     @staticmethod
-    async def weapon_arrange_dict(json_obj: dict):
+    async def weapon_arrange_dict(json_obj: dict) -> None:
         raise NotImplementedError("Requested endpoint has not been developed yet")
 
     @staticmethod
-    async def character_arrange_dict(json_obj: dict) -> Character:
+    def character_arrange_dict(json_obj: dict) -> Character:
         initial_dictionary = {}
         image = Image(**json_obj['character_image'])
         initial_dictionary.update({'image': image})
@@ -66,30 +72,36 @@ class GenshinEndpoint:
                     json_obj = await response.json()
                     if raw:
                         return json_obj
-                    func = self._key_check.get(endpoint)
-                    if not func:
-                        raise NotExist("This endpoint doesn't exist")
-                    return await func(json_obj)
+                    return func(json_obj)
         else:
             async with self.session.get(base_url, params=kwargs, headers=headers) as response:
                 handle_exception(response)
                 json_obj = await response.json()
                 if raw:
                     return json_obj
-                return await func(json_obj)
+                return func(json_obj)
 
 
 class ImageEndpoint:
     __slots__ = ('api_key', 'session', 'io')
 
     def __init__(self, *, api_key: str, session: aiohttp.ClientSession = None, io: bool = None) -> None:
+        """
+        Helper class for getting Manipulated Image from Kozumikku API
+        """
         self.api_key: str = api_key
         if io is not None and not isinstance(io, bool):
-            raise TypeError("Except bool got", type(io))
+            raise TypeError("Excepted bool got", type(io))
         self.io: bool = io
         self.session: aiohttp.ClientSession = session
         if session and not isinstance(session, aiohttp.ClientSession):
             self.session = None
+
+    @staticmethod
+    def get_correct_object(byte: bytes):
+        if self.io:
+            return BytesIO(byte)
+        return byte
 
     async def request(self, endpoint: str, **kwargs):
         headers = {"Authorization": self.api_key}
@@ -99,13 +111,9 @@ class ImageEndpoint:
                 async with session.get(base_url, params=kwargs, headers=headers) as response:
                     handle_exception(response)
                     bytes_obj = await response.read()
-                    if self.io:
-                        return BytesIO(bytes_obj)
-                    return bytes_obj
+                    return self.get_correct_object(bytes_obj)
         else:
             async with self.session.get(base_url, params=kwargs, headers=headers) as response:
                 handle_exception(response)
                 bytes_obj = await response.read()
-                if self.io:
-                    return BytesIO(bytes_obj)
-                return bytes_obj
+                return self.get_correct_object(bytes_obj)

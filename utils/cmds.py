@@ -15,6 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ZERO = timedelta(0)
 
+
 class UTC(tzinfo):
     def utcoffset(self, dt) -> timedelta:
         return ZERO
@@ -25,8 +26,10 @@ class UTC(tzinfo):
     def dst(self, dt) -> timedelta:
         return ZERO
 
+
 class VishAPI:
     __slots__ = ('api_key', 'bot', 'member')
+
     def __init__(self, bot, member) -> None:
         self.api_key = config.VISHAPI
         self.bot = bot
@@ -34,28 +37,35 @@ class VishAPI:
 
     async def get_embed(self, endpoint: str, **kwargs) -> Tuple[discord.Embed, discord.File]:
         headers = {"Authorization": self.api_key}
-        session = await self.bot.session.get(f"https://api.kozumikku.tech/image/{endpoint}", params=kwargs, headers=headers)
+        session = await self.bot.session.get(f"https://api.kozumikku.tech/image/{endpoint}", params=kwargs,
+                                             headers=headers)
         print(session.status)
         file = discord.File(BytesIO(await session.read()), filename=f"{endpoint}.png")
         embed = discord.Embed(title=f"{endpoint.title()}-ed Image for {self.member.name}", color=self.bot.theme)
         embed.set_image(url=f"attachment://{endpoint}.png")
-        return (embed, file)
-        
+        return embed, file
+
 
 class Spotify:
     __slots__ = ('member', 'bot', 'embed', 'regex', 'headers', 'counter')
+
     def __init__(self, *, bot, member) -> None:
         self.member = member
         self.bot = bot
-        self.embed = discord.Embed(title=f"{member.display_name} is Listening to Spotify", color = self.bot.theme)
+        self.embed = discord.Embed(title=f"{member.display_name} is Listening to Spotify", color=self.bot.theme)
         self.regex = "(https\:\/\/open\.spotify\.com\/artist\/[a-zA-Z0-9]+)"
-        self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'}
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/75.0.3770.100 Safari/537.36'}
         self.counter = 0
 
     async def request_pass(self, *, track_id: str):
         try:
             if not self.bot.spotify_session or dt.utcnow() > self.bot.spotify_session[1]:
-                resp = await self.bot.session.post("https://accounts.spotify.com/api/token", params={"grant_type": "client_credentials"}, headers={"Authorization": f'Basic {base64.urlsafe_b64encode(f"{self.bot.spotify_client_id}:{self.bot.spotify_client_secret}".encode()).decode()}', "Content-Type": "application/x-www-form-urlencoded",},)
+                resp = await self.bot.session.post("https://accounts.spotify.com/api/token",
+                                                   params={"grant_type": "client_credentials"}, headers={
+                        "Authorization": f'Basic {base64.urlsafe_b64encode(f"{self.bot.spotify_client_id}:{self.bot.spotify_client_secret}".encode()).decode()}',
+                        "Content-Type": "application/x-www-form-urlencoded", }, )
                 auth_js = await resp.json()
                 timenow = dt.utcnow() + timedelta(seconds=auth_js['expires_in'])
                 type_token = auth_js['token_type']
@@ -71,12 +81,12 @@ class Spotify:
         else:
             try:
                 resp = await self.bot.session.get(f"https://api.spotify.com/v1/tracks/{urllib.parse.quote(track_id)}",
-                        params={
-                            "market": "US",
-                        },
-                        headers={
-                            "Authorization": auth_token},
-                )
+                                                  params={
+                                                      "market": "US",
+                                                  },
+                                                  headers={
+                                                      "Authorization": auth_token},
+                                                  )
                 json = await resp.json()
                 return json
             except Exception:
@@ -86,12 +96,13 @@ class Spotify:
                     self.counter += 1
                     await self.request_pass(track_id=track_id)
 
-    def PIL_process(self, pic, name, artists, time, time_at, track):
+    @staticmethod
+    def pil_process(pic, name, artists, time, time_at, track):
         s = ColorThief(pic)
         color = s.get_palette(color_count=2)
         result = Image.new('RGBA', (575, 170))
         draw = ImageDraw.Draw(result)
-        color_font = "white" if sum(color[0]) < 450 else "black" 
+        color_font = "white" if sum(color[0]) < 450 else "black"
         draw.rounded_rectangle(((0, 0), (575, 170)), 20, fill=color[0])
         s = Image.open(pic)
         s = s.resize((128, 128))
@@ -100,14 +111,14 @@ class Spotify:
         Image.Image.paste(result, s, (27, 20))
         font = ImageFont.truetype(f"Assets/spotify.ttf", 28)
         font2 = ImageFont.truetype(f"Assets/spotify.ttf", 18)
-        draw.text((170, 20), name, color_font,font=font)
-        draw.text((170, 55), artists, color_font,font=font2)
-        draw.text((500, 120), time, color_font,font=font2)
-        draw.text((170, 120), time_at, color_font,font=font2)
-        draw.rectangle(((230, 130), (490, 127)), fill="grey") # play bar
+        draw.text((170, 20), name, color_font, font=font)
+        draw.text((170, 55), artists, color_font, font=font2)
+        draw.text((500, 120), time, color_font, font=font2)
+        draw.text((170, 120), time_at, color_font, font=font2)
+        draw.rectangle(((230, 130), (490, 127)), fill="grey")  # play bar
         draw.rectangle(((230, 130), (230 + track, 127)), fill=color_font)
-        draw.ellipse((230 + track-5, 122, 230 + track+5, 134), fill = color_font, outline =color_font)
-        draw.ellipse((230 + track-6, 122, 230 + track+6, 134), fill = color_font, outline =color_font)
+        draw.ellipse((230 + track - 5, 122, 230 + track + 5, 134), fill=color_font, outline=color_font)
+        draw.ellipse((230 + track - 6, 122, 230 + track + 6, 134), fill=color_font, outline=color_font)
         output = BytesIO()
         result.save(output, "png")
         output.seek(0)
@@ -120,25 +131,25 @@ class Spotify:
         artists = artists[0:36] + "..." if len(artists) > 36 else artists
         time = act.duration.seconds
         time_at = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - act.start).total_seconds()
-        track = (time_at/time)*260
-        time = f"{time//60:02d}:{time%60:02d}"
-        time_at = f"{int((time_at if time_at > 0 else 0)//60):02d}:{int((time_at if time_at > 0 else 0)%60):02d}"
+        track = (time_at / time) * 260
+        time = f"{time // 60:02d}:{time % 60:02d}"
+        time_at = f"{int((time_at if time_at > 0 else 0) // 60):02d}:{int((time_at if time_at > 0 else 0) % 60):02d}"
         pog = act.album_cover_url
         name = ''.join([x for x in act.title if x in s])
         name = name[0:21] + "..." if len(name) > 21 else name
         rad = await bot.session.get(pog)
         pic = BytesIO(await rad.read())
-        return await bot.loop.run_in_executor(None, self.PIL_process, pic, name, artists, time, time_at, track)
+        return await bot.loop.run_in_executor(None, self.pil_process, pic, name, artists, time, time_at, track)
 
     @staticmethod
     async def fetch_from_api(bot, activity: discord.Spotify):
         act = activity
         base_url = "https://api.jeyy.xyz/discord/spotify"
-        params = {'title': act.album, 'cover_url': act.album_cover_url, 'artists': act.artists[0], 'duration_seconds': act.duration.seconds, 'start_timestamp': int(act.start.timestamp())}
+        params = {'title': act.album, 'cover_url': act.album_cover_url, 'artists': act.artists[0],
+                  'duration_seconds': act.duration.seconds, 'start_timestamp': int(act.start.timestamp())}
         connection = await bot.session.get(base_url, params=params)
         buffer = BytesIO(await connection.read())
         return discord.File(fp=buffer, filename="spotify.png")
-
 
     async def send_backup_artist_request(self, activity):
         artists = activity.artists
@@ -151,15 +162,15 @@ class Spotify:
         final_total = final[0:total]
         final_string = ', '.join([f"[{artists[final_total.index(x)]}]({x})" for x in final_total])
         return final_string
- 
 
-    async def get_embed(self) -> Tuple[discord.Embed, discord.File]:  
+    async def get_embed(self) -> Tuple[discord.Embed, discord.File]:
         activity = discord.utils.find(lambda activity: isinstance(activity, discord.Spotify), self.member.activities)
         if not activity:
             return False
         try:
             result = await self.request_pass(track_id=activity.track_id)
-            final_string = ', '.join([f"[{resp['name']}]({resp['external_urls']['spotify']})" for resp in result['artists']])
+            final_string = ', '.join(
+                [f"[{resp['name']}]({resp['external_urls']['spotify']})" for resp in result['artists']])
         except Exception:
             final_string = await self.send_backup_artist_request(activity)
         url = activity.track_url
@@ -168,103 +179,59 @@ class Spotify:
         self.embed.set_image(url="attachment://spotify.png")
         return self.embed, image
 
-    
-
 
 async def humanize_alternative(ws) -> str or bool:
-        returning = ""
-        seconds = int(ws)
-        if seconds <= 0:
-            return False
-        years, seconds = divmod(seconds, 31536000)
-        months, seconds = divmod(seconds, 2628000)
-        weeks, seconds = divmod(seconds, 604800)
-        days, seconds = divmod(seconds, 86400)
-        hours, seconds = divmod(seconds, 3600)
-        minutes, seconds = divmod(seconds, 60)
-        a_u_v = [years, months, weeks, days, hours, minutes, seconds]
-        a_u_n = ["year", "month", "week", "day", "hour", "minute", "second"]
-        op_list_v = []
-        op_list_n = []
-        for i in range(len(a_u_v)):
-            if a_u_v[i] > 0:
-                op_list_v.append(a_u_v[i])
-                op_list_n.append(a_u_n[i])
-        for i in range(len(op_list_v)):
-            if i + 3 <= len(op_list_v):
-                returning += f"{op_list_v[i]} {f'{op_list_n[i]}, ' if op_list_v[i] <= 1 else f'{op_list_n[i]}s, '}"
-            elif i + 2 <= len(op_list_v):
-                returning += f"{op_list_v[i]} {f'{op_list_n[i]} and ' if op_list_v[i] <= 1 else f'{op_list_n[i]}s and '}"
-            else:
-                returning += f"{op_list_v[i]} {op_list_n[i] if op_list_v[i] <= 1 else op_list_n[i] + 's'}"
-        return returning
+    returning = ""
+    seconds = int(ws)
+    if seconds <= 0:
+        return False
+    years, seconds = divmod(seconds, 31536000)
+    months, seconds = divmod(seconds, 2628000)
+    weeks, seconds = divmod(seconds, 604800)
+    days, seconds = divmod(seconds, 86400)
+    hours, seconds = divmod(seconds, 3600)
+    minutes, seconds = divmod(seconds, 60)
+    a_u_v = [years, months, weeks, days, hours, minutes, seconds]
+    a_u_n = ["year", "month", "week", "day", "hour", "minute", "second"]
+    op_list_v = []
+    op_list_n = []
+    for i in range(len(a_u_v)):
+        if a_u_v[i] > 0:
+            op_list_v.append(a_u_v[i])
+            op_list_n.append(a_u_n[i])
+    for i in range(len(op_list_v)):
+        if i + 3 <= len(op_list_v):
+            returning += f"{op_list_v[i]} {f'{op_list_n[i]}, ' if op_list_v[i] <= 1 else f'{op_list_n[i]}s, '}"
+        elif i + 2 <= len(op_list_v):
+            returning += f"{op_list_v[i]} {f'{op_list_n[i]} and ' if op_list_v[i] <= 1 else f'{op_list_n[i]}s and '}"
+        else:
+            returning += f"{op_list_v[i]} {op_list_n[i] if op_list_v[i] <= 1 else op_list_n[i] + 's'}"
+    return returning
+
 
 async def get_graph(bot, *args):
-      og_dict = {
-       "type":"line",
-       "data":{
-          "labels":[],
-          "datasets":[
-             {
-                "label":"Statistics",
-                "data":[],
-            "backgroundColor":"rgb(255, 99, 132)",
-            "borderColor":"rgb(255, 99, 132)",
-            "fill":'false'
-               }
+    og_dict = {
+        "type": "line",
+        "data": {
+            "labels": [],
+            "datasets": [
+                {
+                    "label": "Statistics",
+                    "data": [],
+                    "backgroundColor": "rgb(255, 99, 132)",
+                    "borderColor": "rgb(255, 99, 132)",
+                    "fill": 'false'
+                }
             ]
-         }
-      }
-      label1 = list(range(1, len(args)+1))
-      print(label1)
-      data = [x for x in args]
-      og_dict['data']['labels'] = label1
-      og_dict['data']['datasets'][0]['data'] = data
-      param = {"c": str(og_dict)}
-      url = "https://quickchart.io/chart"
-      s = await bot.session.get(url, params=param)
-      ob = BytesIO(await s.read())
-      return discord.File(fp=ob, filename="plot.png")
-
-
-
-class checkbutton(discord.ui.View):
-    def __init__(self, author, member, length, ctx, chance):
-        super().__init__(timeout=length)
-        self.author = author
-        self.member = member
-        self.length = length
-        self.ctx = ctx
-        self.chance = chance
-
-    async def on_timeout(self):
-        for item in self.children:
-            item.disabled = True
-        await self.message.edit(view=self)
-
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        print(self.author)
-        print(interaction.user)
-        if self.author == interaction.user or self.chance == 2:
-            return True
-        elif self.chance == 1 and self.author != interaction.user:
-            await interaction.response.send_message(f"You stupid cunt this menu is not for you", ephemeral=True)
-            return False
-        else:
-            await interaction.response.send_message(f"You stupid cunt this menu is not for you", ephemeral=True)
-            return False
-
-    @discord.ui.button(emoji="<:CD_Auction:914483133204799569>", label="Unmute this user", style=discord.ButtonStyle.red)
-    async def unmute(self, _, interaction: discord.Interaction) -> None:
-        embed=discord.Embed(title=f"<:CD_Check:917358738384519198> - **Checkmated! {self.member}**", description=f"~~**You have been checkmated!**\n{self.member.mention} You have been muted for **{self.length} second(s)**~~\nThis user has been unmuted!", color=0xFFB6C1)
-        embed.set_footer(text=self.author, icon_url=self.author.avatar.url)
-        if self.chance == 1:
-            embed=discord.Embed(title=f"<:CD_Check:917358738384519198> - **Checkmated! {self.member}**", description=f"~~**Oh no! The enemy was too smart!**\n{self.member.mention} You have been muted for **{self.length} second(s)**~~\nThis user has been unmuted!", color=0xFFB6C1)
-            embed.set_footer(text=self.author, icon_url=self.author.avatar.url)
-        role = discord.utils.get(self.ctx.guild.roles, id=899676146420035655)
-        await self.member.remove_roles(role)
-        for item in self.children:
-            item.disabled = True
-        await interaction.response.edit_message(embed=embed, view=self)
-
+        }
+    }
+    label1 = list(range(1, len(args) + 1))
+    print(label1)
+    data = [x for x in args]
+    og_dict['data']['labels'] = label1
+    og_dict['data']['datasets'][0]['data'] = data
+    param = {"c": str(og_dict)}
+    url = "https://quickchart.io/chart"
+    s = await bot.session.get(url, params=param)
+    ob = BytesIO(await s.read())
+    return discord.File(fp=ob, filename="plot.png")
