@@ -2,7 +2,7 @@ import json
 import aiohttp
 from io import BytesIO
 from VishAPI.exceptions import APIException, NotExist
-from VishAPI.objects import Character
+from VishAPI.objects import Character, Image
 
 
 def handle_exception(response):
@@ -42,7 +42,8 @@ class GenshinEndpoint:
     @staticmethod
     async def character_arrange_dict(json_obj: dict) -> Character:
         initial_dictionary = {}
-        initial_dictionary.update(json_obj['character_image'])
+        image = Image(**json_obj['character_image'])
+        initial_dictionary.update({'image': image})
         initial_dictionary.update({'name': json_obj['name']})
         initial_dictionary.update({'description': json_obj['description']})
         initial_dictionary.update({'game_description': json_obj['game_description']})
@@ -80,7 +81,7 @@ class GenshinEndpoint:
 
 
 class ImageEndpoint:
-    __slots__ = ('api_key', 'session', 'IO')
+    __slots__ = ('api_key', 'session', 'io')
 
     def __init__(self, *, api_key: str, session: aiohttp.ClientSession = None, io: bool = None) -> None:
         self.api_key: str = api_key
