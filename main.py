@@ -106,6 +106,7 @@ async def gitpull(ctx: commands.Context):
     repo = git.Repo('/home/ubuntu/Snowphia/.git')
     ret = repo.remotes.origin.pull()
     await ctx.send(str(ret))
+    await ctx.send(str(ret[0].flags))
     await message.delete()
     command = client.get_command('restart')
     await ctx.invoke(command)
