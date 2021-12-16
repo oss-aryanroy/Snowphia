@@ -7,7 +7,13 @@ from typing import Union, Optional
 
 class Fun(commands.Cog):
     def __init__(self, bot) -> None:
+        self.genshin = None
+        self.image = None
         self.bot = bot
+        self.bot.loop.create_task(self.set_class_vars())
+        
+    async def set_class_vars(self):
+        await self.bot.wait_until_ready()
         self.image = ImageEndpoint(api_key=config.VISHAPI, session=self.bot.session, io=True)
         self.genshin = GenshinEndpoint(api_key=config.VISHAPI, session=self.bot.session)
 
