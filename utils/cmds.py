@@ -124,7 +124,7 @@ class Spotify:
         time = f"{time//60:02d}:{time%60:02d}"
         time_at = f"{int((time_at if time_at > 0 else 0)//60):02d}:{int((time_at if time_at > 0 else 0)%60):02d}"
         pog = act.album_cover_url
-        name = ''.join([x for x in act.album if x in s])
+        name = ''.join([x for x in act.title if x in s])
         name = name[0:21] + "..." if len(name) > 21 else name
         rad = await bot.session.get(pog)
         pic = BytesIO(await rad.read())

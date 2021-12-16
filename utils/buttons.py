@@ -2,7 +2,7 @@ import config
 import discord
 from typing import Optional
 from discord.ext import commands
-from urllib.parse import quote_plus
+
 
 class SpotifyButton(discord.ui.View):
     def __init__(self, ctx: commands.Context, act: discord.Spotify, *, timeout: Optional[float] = 180):
@@ -28,7 +28,6 @@ class SpotifyButton(discord.ui.View):
     @discord.ui.button(emoji="<:trashcan:919732033222246440>", label="Close Embed", style=discord.ButtonStyle.red)
     async def deletembed(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.message.delete()
-
 
 class ButtonDelete(discord.ui.View):
     __slors__ = ('context')

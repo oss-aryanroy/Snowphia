@@ -301,8 +301,6 @@ class MyUtils(commands.Cog):
             activity = discord.utils.find(lambda activity: isinstance(activity, discord.Spotify), member.activities)
             view = SpotifyButton(ctx, activity)
             view.message = await ctx.send(embed=embed[0], file=embed[1], view=view)
-            
-
 
 
 

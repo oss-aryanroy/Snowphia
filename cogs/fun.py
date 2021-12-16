@@ -3,8 +3,6 @@ from discord.ext import commands
 from utils.cmds import VishAPI
 from typing import Union, Optional
 
-from utils.slash_utils import slash_command
-
 class Fun(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
@@ -111,10 +109,6 @@ class Fun(commands.Cog):
         vish = VishAPI(self.bot, member)
         embed, file = await vish.get_embed(ctx.command.name, url=avatar, filter=gradient.lower())
         await ctx.reply(embed=embed, file=file ,mention_author=False)
-
-    @commands.command(slash_command=True)
-    async def cool(self, ctx):
-        await ctx.send("Wohoo")
 
 def setup(bot):
     bot.add_cog(Fun(bot))
