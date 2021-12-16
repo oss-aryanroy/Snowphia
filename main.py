@@ -98,17 +98,16 @@ async def restart(ctx: commands.Context):
     await client.redis.hset("restart", "to_send", 1)
     await client.close()
 
+
 @client.command(hidden=True)
 @commands.is_owner()
 async def gitpull(ctx: commands.Context):
     message = await ctx.send('Pulling latest files from repo...')
-    repo = git.Repo('https://github.com/FreezingRose/Snowphia')
+    repo = git.Repo('/.git')
     repo.remotes.origin.pull()
     await message.delete()
     command = client.get_command('restart')
     ctx.invoke(command)
-
-
 
 
 for filename in os.listdir('./cogs'):
