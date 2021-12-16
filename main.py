@@ -107,7 +107,7 @@ async def gitpull(ctx: commands.Context):
     repo.remotes.origin.pull()
     await message.delete()
     command = client.get_command('restart')
-    ctx.invoke(command)
+    await ctx.invoke(command)
 
 
 for filename in os.listdir('./cogs'):
