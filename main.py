@@ -104,7 +104,8 @@ async def restart(ctx: commands.Context):
 async def gitpull(ctx: commands.Context):
     message = await ctx.send('Pulling latest files from repo...')
     repo = git.Repo('/home/ubuntu/Snowphia/.git')
-    repo.remotes.origin.pull()
+    ret = repo.remotes.origin.pull()
+    await ctx.send(str(ret))
     await message.delete()
     command = client.get_command('restart')
     await ctx.invoke(command)
