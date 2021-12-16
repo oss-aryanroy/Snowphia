@@ -122,10 +122,10 @@ class Fun(commands.Cog):
                      gradient: str = "oceanic"):
         possible = "dramatic, firenze, golden, lix, lofi, neue, obsidian, pastel_pink, ryo, oceanic, marine, " \
                    "seagreen, flagblue, liquid, diamante , radio, twenties, rosetint, mauve, bluechrome, vintage, " \
-                   "perfume, serenity "
-        new_possibles = possible.split(', ')
+                   "perfume, serenity"
+        new_possibles = [text.strip() for text in possible.split(', ')]
         if gradient == "list":
-            actual = ', '.join([f"`{text.strip()}`" for text in possible.split(', ')])
+            actual = ', '.join([f"`{text}`" for text in new_possibles])
             return await ctx.reply(f"Here are all the possible gradients: {actual}\n**Default:** `oceanic`")
         if gradient not in new_possibles:
             return await ctx.send(
