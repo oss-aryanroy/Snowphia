@@ -85,7 +85,7 @@ class ImageEndpoint:
     def __init__(self, *, api_key: str, session: aiohttp.ClientSession = None, io: bool = None) -> None:
         self.api_key: str = api_key
         if io is not None and not isinstance(io, bool):
-            raise TypeError("Except bool got", type(IO))
+            raise TypeError("Except bool got", type(io))
         self.io: bool = io
         self.session: aiohttp.ClientSession = session
         if session and not isinstance(session, aiohttp.ClientSession):
