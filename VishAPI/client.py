@@ -1,11 +1,25 @@
+import json
 import aiohttp
 from io import BytesIO
 from VishAPI.exceptions import APIException, NotExist
 from VishAPI.objects import Character
 
 
+def handle_exception(response):
+    if response.status not in range(200, 299):
+        try:
+            result = await response.json()
+            response = result['message']
+            code = result["code"]
+        except aiohttp.ContentTypeError:
+            response = await response.text()
+            code = response.status
+        raise APIException(response, status=code)
+
+
 class GenshinEndpoint:
     __slots__ = ('api_key', 'session', '_key_check')
+
     def __init__(self, *, api_key: str, session: aiohttp.ClientSession = None) -> None:
         self.api_key: str = api_key
         self._key_check = {
@@ -15,7 +29,7 @@ class GenshinEndpoint:
         }
         self.session: aiohttp.ClientSession = session
         if session and not isinstance(session, aiohttp.ClientSession):
-             self.session = None
+            self.session = None
 
     @staticmethod
     async def artifact_arrange_dict(json_obj: dict):
@@ -48,15 +62,7 @@ class GenshinEndpoint:
         if not self.session:
             async with aiohttp.ClientSession() as session:
                 async with session.get(base_url, params=kwargs, headers=headers) as response:
-                    if response.status not in range(200, 299):
-                        try:
-                            json = await response.json()
-                            response = json['message']
-                            code = json["code"]
-                        except Exception:
-                            response = await response.text()
-                            code = response.status
-                        raise APIException(response, status=code)
+                    handle_exception(response)
                     json_obj = await response.json()
                     if raw:
                         return json_obj
@@ -66,62 +72,40 @@ class GenshinEndpoint:
                     return await func(json_obj)
         else:
             async with self.session.get(base_url, params=kwargs, headers=headers) as response:
-                if response.status not in range(200, 299):
-                    try:
-                        json = await response.json()
-                        result = json['message']
-                        code = json["status"]
-                    except Exception:
-                        result = await response.text()
-                        code = response.status
-                    raise APIException(result, status=code)
+                handle_exception(response)
                 json_obj = await response.json()
                 if raw:
                     return json_obj
                 return await func(json_obj)
-                
 
 
 class ImageEndpoint:
     __slots__ = ('api_key', 'session', 'IO')
-    def __init__(self, *, api_key: str, session: aiohttp.ClientSession = None, IO: bool = None) -> None:
+
+    def __init__(self, *, api_key: str, session: aiohttp.ClientSession = None, io: bool = None) -> None:
         self.api_key: str = api_key
-        if IO is not None and not isinstance(IO, bool):
-           raise TypeError("Except bool got", type(IO))
-        self.IO: bool = IO
+        if io is not None and not isinstance(io, bool):
+            raise TypeError("Except bool got", type(IO))
+        self.io: bool = io
         self.session: aiohttp.ClientSession = session
         if session and not isinstance(session, aiohttp.ClientSession):
-             self.session = None
+            self.session = None
 
     async def request(self, endpoint: str, **kwargs):
         headers = {"Authorization": self.api_key}
         base_url = f"https://api.kozumikku.tech/image/{endpoint}"
         if not self.session:
-           async with aiohttp.ClientSession() as session:
-              async with session.get(base_url, params=kwargs, headers=headers) as response:
-                  if response.status not in range(200, 299):
-                      try:
-                          json = await response.json()
-                          response = json['message']
-                          code = json["code"]
-                      except Exception:
-                          response = await response.text()
-                          code = response.status
-                      raise APIException(response, status=code)
-                  bytes_obj = await response.read()
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, params=kwargs, headers=headers) as response:
+                    handle_exception(response)
+                    bytes_obj = await response.read()
+                    if self.io:
+                        return BytesIO(bytes_obj)
+                    return bytes_obj
         else:
-           async with self.session.get(base_url, params=kwargs, headers=headers) as response:
-             if response.status not in range(200, 299):
-                      try:
-                          json = await response.json()
-                          result = json['message']
-                          code = json["status"]
-                      except Exception:
-                          result = await response.text()
-                          code = response.status
-                      raise APIException(result, status=code)
-             bytes_obj = await response.read()
-             if self.IO:
-                  return BytesIO(bytes_obj)
-             else:
-                  return bytes_obj
+            async with self.session.get(base_url, params=kwargs, headers=headers) as response:
+                handle_exception(response)
+                bytes_obj = await response.read()
+                if self.io:
+                    return BytesIO(bytes_obj)
+                return bytes_obj
