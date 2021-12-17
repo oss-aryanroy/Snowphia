@@ -228,9 +228,11 @@ async def get_graph(bot, *args):
 
 
 @executor()
-def get_picture(image: BytesIO):
+def get_picture(image: BytesIO, size: Tuple[int, int] = None):
     # Open the input image as numpy array, convert to RGB
     img = Image.open(image).convert("RGB")
+    if size:
+        img = img.resize(size)
     npimage = np.array(img)
     h, w = img.size
     alpha = Image.new('L', img.size, 0)
