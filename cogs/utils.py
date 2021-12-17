@@ -6,7 +6,7 @@ import re
 import time
 from urllib.parse import quote_plus
 from utils.buttons import SpotifyButton, ButtonDelete
-from utils.cmds import get_graph, humanize_alternative, Spotify, UTC
+from utils.cmds import get_graph, Spotify, UTC
 from io import BytesIO
 from datetime import datetime
 from discord.ext import commands
