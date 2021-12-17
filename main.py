@@ -1,4 +1,5 @@
 ﻿import os
+import asyncio
 import aioredis
 import git
 import config
@@ -105,8 +106,7 @@ async def restart(ctx: commands.Context):
 async def gitpull(ctx: commands.Context):
     command = client.get_command('jsk sh')
     await ctx.invoke(command, argument=codeblock_converter("sudo git pull"))
-    if ret[0].flags == 4:
-        return
+    await asyncio.sleep(2.0)
     command = client.get_command('restart')
     await ctx.invoke(command)
 
