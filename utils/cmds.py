@@ -264,7 +264,7 @@ def get_picture(image: BytesIO):
     img_arr = np.array(img)
     lum_img_arr = np.array(lum_img)
     final_img_arr = np.dstack((img_arr, lum_img_arr))
-    image = Image.fromarray(final_img_arr)
+    image = Image.fromarray(final_img_arr.astype(np.uint8))
     buffer = BytesIO()
     image.save(buffer, "PNG")
     buffer.seek(0)
