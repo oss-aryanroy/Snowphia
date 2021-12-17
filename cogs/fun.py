@@ -144,7 +144,7 @@ class Fun(commands.Cog):
     async def round(self, ctx: commands.Context):
         member = ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
-        session = await self.client.session.get(avatar)
+        session = await self.bot.session.get(avatar)
         byte = BytesIO(await session.read())
         image = cmds.get_pictute(byte)
         file = discord.File(fp=image, filename="rounded.png")
