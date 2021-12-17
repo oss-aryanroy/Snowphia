@@ -1,7 +1,6 @@
 import re
 import base64
 import config
-import random
 import string
 import urllib
 import asyncio
@@ -13,7 +12,7 @@ from typing import Tuple
 from colorthief import ColorThief
 from datetime import datetime as dt
 from datetime import timedelta, tzinfo
-from PIL import Image, ImageOps, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 ZERO = timedelta(0)
 
@@ -128,8 +127,8 @@ class Spotify:
         result1 = Image.new('RGBA', (129, 128))
         Image.Image.paste(result, result1, (29, 23))
         Image.Image.paste(result, s, (27, 20))
-        font = ImageFont.truetype(f"Assets/spotify.ttf", 28)
-        font2 = ImageFont.truetype(f"Assets/spotify.ttf", 18)
+        font = ImageFont.truetype("Assets/spotify.ttf", 28)
+        font2 = ImageFont.truetype("Assets/spotify.ttf", 18)
         draw.text((170, 20), name, color_font, font=font)
         draw.text((170, 55), artists, color_font, font=font2)
         draw.text((500, 120), time, color_font, font=font2)

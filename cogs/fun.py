@@ -2,7 +2,7 @@ import config
 import discord
 from io import BytesIO
 from utils import cmds
-from VishAPI.client import *
+from VishAPI.client import GenshinEndpoint, ImageEndpoint
 from discord.ext import commands
 from typing import Union, Optional
 
