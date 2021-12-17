@@ -14,8 +14,7 @@ class SpotifyButton(discord.ui.View):
         self.author = ctx.author
 
     async def on_timeout(self):
-        for view in self.children:
-            view.disabled = True
+        self.deletembed.disabled = True
         await self.message.edit(view=self)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
