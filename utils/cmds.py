@@ -1,20 +1,19 @@
 import re
-import asyncio
-import discord
-import config
-from io import BytesIO
-from datetime import datetime as dt
-from datetime import timedelta, tzinfo
-import random
 import base64
-import datetime
+import config
+import random
 import string
 import urllib
+import asyncio
+import discord
+import datetime
+import functools
+from io import BytesIO
 from typing import Tuple
 from colorthief import ColorThief
-import functools
+from datetime import datetime as dt
+from datetime import timedelta, tzinfo
 from PIL import Image, ImageOps, ImageDraw, ImageFont
-import numpy as np
 
 ZERO = timedelta(0)
 
@@ -77,11 +76,14 @@ class Spotify:
 
     async def request_pass(self, *, track_id: str):
         try:
+            headers = {"Authorization":
+                           f'Basic {base64.urlsafe_b64encode(f"{self.bot.spotify_client_id}:{self.bot.spotify_client_secret}".encode()).decode()}',
+                       "Content-Type":
+                           "application/x-www-form-urlencoded", }
+            params = {"grant_type": "client_credentials"}
             if not self.bot.spotify_session or dt.utcnow() > self.bot.spotify_session[1]:
                 resp = await self.bot.session.post("https://accounts.spotify.com/api/token",
-                                                   params={"grant_type": "client_credentials"}, headers={
-                        "Authorization": f'Basic {base64.urlsafe_b64encode(f"{self.bot.spotify_client_id}:{self.bot.spotify_client_secret}".encode()).decode()}',
-                        "Content-Type": "application/x-www-form-urlencoded", }, )
+                                                   params=params, headers=headers)
                 auth_js = await resp.json()
                 timenow = dt.utcnow() + timedelta(seconds=auth_js['expires_in'])
                 type_token = auth_js['token_type']
