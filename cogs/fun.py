@@ -142,6 +142,7 @@ class Fun(commands.Cog):
 
     @commands.command()
     async def round(self, ctx: commands.Context):
+        member = ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
         session = await bot.session.get(avatar)
         byte = BytesIO(await session.read())
