@@ -5,6 +5,7 @@ import config
 import aiohttp
 import discord
 from discord.ext import commands
+from jishaku.codeblocks import codeblock_converter
 
 
 class SnowBot(commands.AutoShardedBot):
@@ -103,7 +104,7 @@ async def restart(ctx: commands.Context):
 @commands.is_owner()
 async def gitpull(ctx: commands.Context):
     command = client.get_command('jsk sh')
-    await ctx.invoke(command, argument="sudo git pull")
+    await ctx.invoke(command, argument=codeblock_converter("sudo git pull"))
     if ret[0].flags == 4:
         return
     command = client.get_command('restart')
