@@ -93,7 +93,7 @@ class Spotify:
                 auth_token = self.bot.spotify_session[0]
                 print('Using previous token')
         except Exception:
-            return False
+            raise Exception("Something went wrong!")
         else:
             try:
                 resp = await self.bot.session.get(f"https://api.spotify.com/v1/tracks/{urllib.parse.quote(track_id)}",
@@ -107,7 +107,7 @@ class Spotify:
                 return json
             except Exception:
                 if self.counter == 4:
-                    return False
+                    raise Exception("Something went wrong!")
                 else:
                     self.counter += 1
                     await self.request_pass(track_id=track_id)
