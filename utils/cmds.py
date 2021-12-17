@@ -13,6 +13,7 @@ from colorthief import ColorThief
 from datetime import datetime as dt
 from datetime import timedelta, tzinfo
 from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
 ZERO = timedelta(0)
 
@@ -228,13 +229,16 @@ async def get_graph(bot, *args):
 
 @executor()
 def get_picture(image: BytesIO):
-    im = Image.open(image)
-    bigsize = (im.size[0] * 3, im.size[1] * 3)
-    mask = Image.new('L', bigsize, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0) + bigsize, fill=255)
-    mask = mask.resize(im.size, Image.ANTIALIAS)
-    im.putalpha(mask)
+    # Open the input image as numpy array, convert to RGB
+    img = Image.open(image).convert("RGB")
+    npimage = np.array(img)
+    h, w = img.size
+    alpha = Image.new('L', img.size, 0)
+    draw = ImageDraw.Draw(alpha)
+    draw.pieslice([0, 0, h, w], 0, 360, fill=255)
+    npalpha = np.array(alpha)
+    npimage = np.dstack((npimage, npalpha))
+    im = Image.fromarray(npimage)
     buffer = BytesIO()
     im.save(buffer, "PNG")
     buffer.seek(0)
