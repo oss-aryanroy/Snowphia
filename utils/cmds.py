@@ -255,7 +255,7 @@ async def get_graph(bot, *args):
 
 @executor()
 def get_picture(image: BytesIO):
-    im = Image.open('image.jpg')
+    im = Image.open(image)
     bigsize = (im.size[0] * 3, im.size[1] * 3)
     mask = Image.new('L', bigsize, 0)
     draw = ImageDraw.Draw(mask)
