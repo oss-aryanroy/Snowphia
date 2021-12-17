@@ -198,35 +198,6 @@ class Spotify:
         return self.embed, image
 
 
-async def humanize_alternative(ws) -> str or bool:
-    returning = ""
-    seconds = int(ws)
-    if seconds <= 0:
-        return False
-    years, seconds = divmod(seconds, 31536000)
-    months, seconds = divmod(seconds, 2628000)
-    weeks, seconds = divmod(seconds, 604800)
-    days, seconds = divmod(seconds, 86400)
-    hours, seconds = divmod(seconds, 3600)
-    minutes, seconds = divmod(seconds, 60)
-    a_u_v = [years, months, weeks, days, hours, minutes, seconds]
-    a_u_n = ["year", "month", "week", "day", "hour", "minute", "second"]
-    op_list_v = []
-    op_list_n = []
-    for i in range(len(a_u_v)):
-        if a_u_v[i] > 0:
-            op_list_v.append(a_u_v[i])
-            op_list_n.append(a_u_n[i])
-    for i in range(len(op_list_v)):
-        if i + 3 <= len(op_list_v):
-            returning += f"{op_list_v[i]} {f'{op_list_n[i]}, ' if op_list_v[i] <= 1 else f'{op_list_n[i]}s, '}"
-        elif i + 2 <= len(op_list_v):
-            returning += f"{op_list_v[i]} {f'{op_list_n[i]} and ' if op_list_v[i] <= 1 else f'{op_list_n[i]}s and '}"
-        else:
-            returning += f"{op_list_v[i]} {op_list_n[i] if op_list_v[i] <= 1 else op_list_n[i] + 's'}"
-    return returning
-
-
 async def get_graph(bot, *args):
     og_dict = {
         "type": "line",
