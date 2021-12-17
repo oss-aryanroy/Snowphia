@@ -102,10 +102,8 @@ async def restart(ctx: commands.Context):
 @client.command(hidden=True)
 @commands.is_owner()
 async def gitpull(ctx: commands.Context):
-    message = await ctx.send('Pulling latest files from repo...')
-    repo = git.Repo('/home/ubuntu/Snowphia/.git')
-    ret = repo.remotes.origin.pull()
-    await message.delete()
+    command = await bot.get_command('jsk sh')
+    await ctx.invoke(command, argument="sudo git pull")
     if ret[0].flags == 4:
         return
     command = client.get_command('restart')
