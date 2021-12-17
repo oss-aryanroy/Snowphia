@@ -4,7 +4,7 @@ from typing import Optional
 from .exceptions import KozumikkuServerError, Forbidden, NotFound, HTTPException, Ratelimited, Unauthorized
 
 
-async def parse_response(resp: aiohttp.ClientResponse, *, io=False, raw=Fals) -> Union[dict, bytes]:
+async def parse_response(resp: aiohttp.ClientResponse, *, io=False) -> Union[dict, bytes]:
     try:
         data = await resp.json()
     except aiohttp.ContentTypeError:
@@ -45,11 +45,10 @@ class HTTPClient:
 
     async def request(self, url: str, **kwargs):
         self._create_session()
-        raw = kwargs.pop('raw', False)
         io = kwargs.pop('io', False)
         headers = {"Authorization": self._token}
         async with self.__session.get(url, params=kwargs, headers=headers) as response:
             if resp.ok:
-                result = parse_response(response, io=io, raw=raw)
+                result = parse_response(response, io=io)
                 return result
             self.handle_exception(response)
