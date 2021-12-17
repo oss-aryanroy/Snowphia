@@ -13,7 +13,7 @@ import urllib
 from typing import Tuple
 from colorthief import ColorThief
 import functools
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageOps, ImageDraw, ImageFont
 import numpy as np
 
 ZERO = timedelta(0)
@@ -255,17 +255,14 @@ async def get_graph(bot, *args):
 
 @executor()
 def get_picture(image: BytesIO):
-    img = Image.open(image)
-    height, width = img.size
-    lum_img = Image.new('L', (height, width), 0)
-    draw = ImageDraw.Draw(lum_img)
-    draw.pieslice(((0, 0), (height, width)), 0, 360,
-                  fill=255, outline="white")
-    img_arr = np.array(img)
-    lum_img_arr = np.array(lum_img)
-    final_img_arr = np.dstack((img_arr, lum_img_arr))
-    image = Image.fromarray(np.uint8(final_img_arr))
+    im = Image.open('image.jpg')
+    bigsize = (im.size[0] * 3, im.size[1] * 3)
+    mask = Image.new('L', bigsize, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0) + bigsize, fill=255)
+    mask = mask.resize(im.size, Image.ANTIALIAS)
+    im.putalpha(mask)
     buffer = BytesIO()
-    image.save(buffer, "PNG")
+    im.save(buffer, "PNG")
     buffer.seek(0)
     return buffer
