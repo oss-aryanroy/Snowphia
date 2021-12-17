@@ -1,5 +1,6 @@
 import config
 import discord
+from utils import cmds
 from VishAPI.client import *
 from discord.ext import commands
 from typing import Union, Optional
@@ -138,6 +139,15 @@ class Fun(commands.Cog):
         embed.set_image(url=f"attachment://{ctx.command.name}.png")
         file = discord.File(fp=image, filename=f"{ctx.command.name}.png")
         await ctx.reply(embed=embed, file=file, mention_author=False)
+
+    @commands.command()
+    async def round(self, ctx: commands.Context):
+        avatar = member.avatar.url if member.avatar else member.default_avatar.url
+        session = await bot.session.get(avatar)
+        byte = BytesIO(await session.read())
+        image = cmds.get_pictute(byte)
+        file = discord.File(fp=image, filename="rounded.png")
+        await ctx.send(file=file)
 
 
 def setup(bot):

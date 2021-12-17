@@ -11,9 +11,24 @@ import string
 import urllib
 from typing import Tuple
 from colorthief import ColorThief
+import functools
 from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
 ZERO = timedelta(0)
+
+
+def executor(loop=None, execute=None):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            partial = functools.partial(func, *args, **kwargs)
+            under_loop = loop or asyncio.get_event_loop()
+            return under_loop.run_in_executor(execute, partial)
+
+        return wrapper
+
+    return decorator
 
 
 class UTC(tzinfo):
@@ -235,3 +250,25 @@ async def get_graph(bot, *args):
     s = await bot.session.get(url, params=param)
     ob = BytesIO(await s.read())
     return discord.File(fp=ob, filename="plot.png")
+
+
+@executor()
+def get_picture(image: BytesIO):
+    img = Image.open(image)
+    display(img)
+
+    height, width = img.size
+    lum_img = Image.new('L', (height, width), 0)
+
+    draw = ImageDraw.Draw(lum_img)
+    draw.pieslice(((0, 0), (height, width)), 0, 360,
+                  fill=255, outline="white")
+    img_arr = np.array(img)
+    lum_img_arr = np.array(lum_img)
+    display(Image.fromarray(lum_img_arr))
+    final_img_arr = np.dstack((img_arr, lum_img_arr))
+    image = Image.fromarray(final_img_arr)
+    buffer = BytesIO()
+    image.save(buffer, "PNG")
+    buffer.seek(0)
+    return buffer

@@ -303,7 +303,7 @@ class MyUtils(commands.Cog):
                     return await ctx.send(f"You are currently not listening to spotify!", mention_author=False)
                 return await ctx.reply(f"{member.mention} is not listening to Spotify", mention_author=False,
                                        allowed_mentions=discord.AllowedMentions(users=False))
-            activity = discord.utils.find(lambda activity: isinstance(activity, discord.Spotify), member.activities)
+            activity = discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities)
             view = SpotifyButton(ctx, activity)
             view.message = await ctx.send(embed=embed[0], file=embed[1], view=view)
 
