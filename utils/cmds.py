@@ -113,6 +113,7 @@ class Spotify:
                     await self.request_pass(track_id=track_id)
 
     @staticmethod
+    @executor()
     def pil_process(pic, name, artists, time, time_at, track):
         s = ColorThief(pic)
         color = s.get_palette(color_count=2)
@@ -155,7 +156,7 @@ class Spotify:
         name = name[0:21] + "..." if len(name) > 21 else name
         rad = await bot.session.get(pog)
         pic = BytesIO(await rad.read())
-        return await bot.loop.run_in_executor(None, self.pil_process, pic, name, artists, time, time_at, track)
+        return await self.pil_process(pic, name, artists, time, time_at, track)
 
     @staticmethod
     async def fetch_from_api(bot, activity: discord.Spotify):
