@@ -1,8 +1,8 @@
 from .http import HTTPClient
 import aiohttp
 from io import BytesIO
-from VishAPI.exceptions import APIException, NotExist
 from VishAPI.objects import Character, Image
+
 
 
 class GenshinEndpoint:
@@ -41,8 +41,6 @@ class GenshinEndpoint:
 
     async def request(self, endpoint: str, name: str, **kwargs):
         func = self._key_check.get(endpoint)
-        if not func:
-            raise NotExist("This endpoint doesn't exist")
         raw = kwargs.pop('raw', False)
         base_url = f"https://api.kozumikku.tech/genshin/{endpoint}/{name}"
         response = await self.http.request(base_url, raw=raw)
