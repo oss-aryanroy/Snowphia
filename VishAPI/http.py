@@ -1,6 +1,6 @@
 import aiohttp
 from io import BytesIO
-from typing import Optional
+from typing import Optional, Union
 from .exceptions import KozumikkuServerError, Forbidden, NotFound, HTTPException, Ratelimited, Unauthorized
 
 
