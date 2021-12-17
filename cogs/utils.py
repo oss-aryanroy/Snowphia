@@ -19,6 +19,16 @@ class MyUtils(commands.Cog):
         self.client = client
         self.utc = UTC()
 
+    def get_new_embed(self, new_emote: discord.Emoji, ctx: commands.Context) -> discord.Embed:
+        em = discord.Embed(title="Emoji Added",
+                           description=f"**Emoji** - {new_emote}"
+                                       f"\n**Emoji name** - {new_emote.name}"
+                                       f"\n**Emoji ID** - {new_emote.id}"
+                                       f"\n**URL** - [Emoji Url]({new_emote.url})"
+                                       f"\n**Added by** - {ctx.author.mention}",
+                           color=self.client.theme)
+        return em
+
     @commands.command(aliases=['av', 'pfp'])
     async def avatar(self, ctx: commands.Context, member: typing.Union[discord.Member, discord.User] = None):
         """Displays a user's avatar"""
@@ -125,13 +135,7 @@ class MyUtils(commands.Cog):
                                 "A random error occured, please contact bot owner for more information!")
                         data = BytesIO(await r.read())
                     new_emote = await ctx.guild.create_custom_emoji(name=name, image=data.getvalue())
-                    em = discord.Embed(title="Emoji Added",
-                                       description=f"**Emoji** - {new_emote}"
-                                                   f"\n**Emoji name** - {new_emote.name}"
-                                                   f"\n**Emoji ID** - {new_emote.id}"
-                                                   f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                                   f"\n**Added by** - {ctx.author.mention}",
-                                       color=self.client.theme)
+                    em = self.get_new_embed(new_emote, ctx)
                     em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{id}.gif")
                     return await ctx.send(embed=em)
                 else:
@@ -144,13 +148,7 @@ class MyUtils(commands.Cog):
                                 "A random error occured, please contact bot owner for more information!")
                         data = BytesIO(await r.read())
                     new_emote = await ctx.guild.create_custom_emoji(name=name, image=data.getvalue())
-                    em = discord.Embed(title="Emoji Added",
-                                       description=f"**Emoji** - {new_emote}"
-                                                   f"\n**Emoji name** - {new_emote.name}"
-                                                   f"\n**Emoji ID** - {new_emote.id}"
-                                                   f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                                   f"\n**Added by** - {ctx.author.mention}",
-                                       color=self.client.theme)
+                    em = self.get_new_embed(new_emote, ctx)
                     em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{id}.png")
                     return await ctx.send(embed=em)
             except IndexError:
@@ -163,13 +161,7 @@ class MyUtils(commands.Cog):
                             "A random error occured, please contact bot owner for more information!")
                     data = BytesIO(await resp.read())
                 new_emote = await ctx.guild.create_custom_emoji(name=emote.name, image=data.getvalue())
-                em = discord.Embed(title="Emoji Added",
-                                   description=f"**Emoji** - {new_emote}"
-                                               f"\n**Emoji name** - {new_emote.name}"
-                                               f"\n**Emoji ID** - {new_emote.id}"
-                                               f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                               f"\n**Added by** - {ctx.author.mention}",
-                                   color=self.client.theme)
+                em = self.get_new_embed(new_emote, ctx)
                 em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emote.id}.png")
                 return await ctx.send(embed=em)
             if emote.animated is True:
@@ -180,13 +172,7 @@ class MyUtils(commands.Cog):
                             "A random error occured, please contact bot owner for more information!")
                     data = BytesIO(await resp.read())
                 new_emote = await ctx.guild.create_custom_emoji(name=emote.name, image=data.getvalue())
-                em = discord.Embed(title="Emoji Added",
-                                   description=f"**Emoji** - {new_emote}"
-                                               f"\n**Emoji name** - {new_emote.name}"
-                                               f"\n**Emoji ID** - {new_emote.id}"
-                                               f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                               f"\n**Added by** - {ctx.author.mention}",
-                                   color=self.client.theme)
+                em = self.get_new_embed(new_emote, ctx)
                 em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emote.id}.gif")
                 return await ctx.send(embed=em)
 
@@ -204,13 +190,7 @@ class MyUtils(commands.Cog):
                                 "Please provide a valid discord emoji or reply to a text with an emoji!")
                         data = BytesIO(await r.read())
                     new_emote = await ctx.guild.create_custom_emoji(name=name, image=data.getvalue())
-                    em = discord.Embed(title="Emoji Added",
-                                       description=f"**Emoji** - {new_emote}"
-                                                   f"\n**Emoji name** - {new_emote.name}"
-                                                   f"\n**Emoji ID** - {new_emote.id}"
-                                                   f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                                   f"\n**Added by** - {ctx.author.mention}",
-                                       color=self.client.theme)
+                    em = self.get_new_embed(new_emote, ctx)
                     em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{id}.gif")
                     return await ctx.send(embed=em)
                 else:
@@ -223,13 +203,7 @@ class MyUtils(commands.Cog):
                                 "Please provide a valid discord emoji or reply to a text with an emoji!")
                         data = BytesIO(await r.read())
                     new_emote = await ctx.guild.create_custom_emoji(name=name, image=data.getvalue())
-                    em = discord.Embed(title="Emoji Added",
-                                       description=f"**Emoji** - {new_emote}"
-                                                   f"\n**Emoji name** - {new_emote.name}"
-                                                   f"\n**Emoji ID** - {new_emote.id}"
-                                                   f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                                   f"\n**Added by** - {ctx.author.mention}",
-                                       color=self.client.theme)
+                    em = self.get_new_embed(new_emote, ctx)
                     em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{id}.png")
                     return await ctx.send(embed=em)
             except IndexError:
@@ -247,13 +221,7 @@ class MyUtils(commands.Cog):
                             data = BytesIO(await r.read())
                         name = "DefaultX"
                         new_emote = await ctx.guild.create_custom_emoji(name=name, image=data.getvalue())
-                        em = discord.Embed(title="Emoji Added",
-                                           description=f"**Emoji** - {new_emote}\n**Emoji name** - {new_emote.name}"
-                                                       f"\n**Emoji ID** - {new_emote.id}"
-                                                       f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                                       f"\n**Added by** - {ctx.author.mention}",
-                                           color=self.client.theme)
-
+                        em = self.get_new_embed(new_emote, ctx)
                         em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{x}.gif")
                         return await ctx.send(embed=em)
                     x = int(x)
@@ -266,13 +234,7 @@ class MyUtils(commands.Cog):
 
                     name = "DefaultX"
                     new_emote = await ctx.guild.create_custom_emoji(name=name, image=data.getvalue())
-                    em = discord.Embed(title="Emoji Added",
-                                       description=f"**Emoji** - {new_emote}\n**Emoji name** - {new_emote.name}"
-                                                   f"\n**Emoji ID** - {new_emote.id}"
-                                                   f"\n**URL** - [Emoji Url]({new_emote.url})"
-                                                   f"\n**Added by** - {ctx.author.mention}",
-                                       color=self.client.theme)
-
+                    em = self.get_new_embed(new_emote, ctx)
                     em.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{x}.png")
                     return await ctx.send(embed=em)
                 except ValueError:
