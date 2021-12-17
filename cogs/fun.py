@@ -147,7 +147,7 @@ class Fun(commands.Cog):
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
         session = await self.bot.session.get(avatar)
         byte = BytesIO(await session.read())
-        image = cmds.get_picture(byte)
+        image = await cmds.get_picture(byte)
         file = discord.File(fp=image, filename="rounded.png")
         await ctx.send(file=file)
 
