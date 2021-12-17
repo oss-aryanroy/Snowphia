@@ -132,7 +132,7 @@ class Fun(commands.Cog):
         if gradient not in new_possibles:
             return await ctx.send(
                 f"An Inappropriate Gradient was passed, use `{ctx.prefix}gradient list` to check all gradients possible")
-        member = member if isinstance(member, (discord.Member, discord.User)) else ctx.author or ctx.author
+        member = member or ctx.author
         avatar = member.avatar.url if member.avatar else member.default_avatar.url
         image = await self.image.request(ctx.command.name, url=avatar, filter=gradient)
         embed = discord.Embed(title=f'Image of {member.display_name} with {gradient} Filter')
