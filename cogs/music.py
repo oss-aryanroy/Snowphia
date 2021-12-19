@@ -31,7 +31,7 @@ class LavalinkVoiceClient(discord.VoiceClient):
         else:
             self.client.lavalink = lavalink.Client(client.user.id)
             self.client.lavalink.add_node(
-                'lavalinkonreplit.icerose.repl.co',
+                'https://lavalinkonreplit.icerose.repl.co',
                 2333,
                 'asecurepasswordlol',
                 'us',
@@ -96,7 +96,7 @@ class Music(commands.Cog):
         await self.bot.wait_until_ready()
         if not hasattr(self.bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
             self.bot.lavalink = lavalink.Client(self.bot.user.id)
-            self.bot.lavalink.add_node('lavalinkonreplit.icerose.repl.co', 2333, 'asecurepasswordlol', 'eu',
+            self.bot.lavalink.add_node('https://lavalinkonreplit.icerose.repl.co', 2333, 'asecurepasswordlol', 'eu',
                                   'default-node')  # Host, Port, Password, Region, Name
 
         lavalink.add_event_hook(self.track_hook)
