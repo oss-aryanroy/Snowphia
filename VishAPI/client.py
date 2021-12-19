@@ -4,7 +4,6 @@ from io import BytesIO
 from VishAPI.objects import Character, Image
 
 
-
 class GenshinEndpoint:
     __slots__ = ('http', 'session', '_key_check')
 
@@ -30,14 +29,11 @@ class GenshinEndpoint:
 
     @staticmethod
     def character_arrange_dict(json_obj: dict) -> Character:
-        initial_dictionary = {}
         image = Image(**json_obj['character_image'])
-        initial_dictionary.update({'image': image})
-        initial_dictionary.update({'name': json_obj['name']})
-        initial_dictionary.update({'description': json_obj['description']})
-        initial_dictionary.update({'game_description': json_obj['game_description']})
-        initial_dictionary.update(json_obj['character_info'])
-        return Character(**initial_dictionary)
+        return Character(image=image, name=json_obj["name"],
+                         description=json_obj["description"],
+                         game_description=json_obj["game_description"],
+                         **json_obj["character_info"])
 
     async def request(self, endpoint: str, name: str, **kwargs):
         func = self._key_check.get(endpoint)
@@ -59,7 +55,6 @@ class ImageEndpoint:
         self.handle_invalid_argument(io, session)
         self.io: bool = io
         self.http = HTTPClient(api_key, session=session)
-
 
     @staticmethod
     def handle_invalid_argument(io, session):
