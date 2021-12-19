@@ -30,6 +30,7 @@ class LavalinkVoiceClient(discord.VoiceClient):
         # ensure there exists a client already
 
     async def on_ready(self):
+        await self.client.wait_until_ready()
         if hasattr(self.client, 'lavalink'):
             self.lavalink = self.client.lavalink
         else:
