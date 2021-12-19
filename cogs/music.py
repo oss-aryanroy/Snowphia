@@ -7,7 +7,6 @@ class Music(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
         self.pomice = pomice.NodePool()
-        self.bot.loop.create_task(self.start_nodes())
 
     async def start_nodes(self):
         await self.pomice.create_node(bot=self.bot, host='lavalinkonreplit.icerose.repl.co', port='443',

@@ -24,6 +24,7 @@ class SnowBot(commands.AutoShardedBot):
 
     async def startup_task(self) -> None:
         await self.wait_until_ready()
+        await self.cogs["Music"].start_nodes()
         guild_id, channel_id, message_id, variable = [int(var) for var in
                                                       await self.redis.hmget("restart", "guild_id", "channel_id",
                                                                              "message_id", "to_send")]
