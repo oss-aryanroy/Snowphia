@@ -33,7 +33,7 @@ class Character:
         self.name: str = name
         self.description: str = description
         self.game_description: str = game_description
-        self.start_rank: str = star_rank
+        self.star_rank: str = star_rank
         self.alternative_names: Union[List[str], str] = alternative_names
         self.title: str = title
         self.vision: str = vision
