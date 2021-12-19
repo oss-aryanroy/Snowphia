@@ -44,5 +44,5 @@ class Character:
         self.birthday: str = birthday
         self.body_type: str = body_type
         self.voice_actor_jp: str = voice_actor_jp
-        self.voice_actor_eng: str = voice_actor_eng
+        self.voice_actor_en: str = voice_actor_eng
         self.voice_actor_cn: str = voice_actor_ch
