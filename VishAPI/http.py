@@ -49,6 +49,6 @@ class HTTPClient:
         headers = {"Authorization": self._token}
         async with self.__session.get(route, params=kwargs, headers=headers) as response:
             if response.ok:
-                result = parse_response(response, io=io)
+                result = await parse_response(response, io=io)
                 return result
             self.handle_exception(response)
