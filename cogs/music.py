@@ -9,6 +9,7 @@ class Music(commands.Cog):
         self.pomice = pomice.NodePool()
 
     async def start_nodes(self):
+        await self.bot.wait_until_ready()
         await self.pomice.create_node(bot=self.bot, host='lavalinkonreplit.icerose.repl.co', port='443',
                                       password='asecurepasswordlol', identifier='MAIN',
                                       spotify_client_id=self.bot.spotify_client_id,
