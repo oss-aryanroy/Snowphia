@@ -10,7 +10,9 @@ class Music(commands.Cog):
 
     async def start_nodes(self):
         await self.pomice.create_node(bot=self.bot, host='lavalinkonreplit.icerose.repl.co', port='443',
-                                      password='asecurepasswordlol', identifier='MAIN')
+                                      password='asecurepasswordlol', identifier='MAIN',
+                                      spotify_client_id=self.bot.spotify_client_id,
+                                      spotify_client_secret=self.bot.spotify_client_secret)
         print(f"Node is ready!")
 
     @commands.command(name='join', aliases=['connect'])
