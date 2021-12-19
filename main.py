@@ -24,7 +24,6 @@ class SnowBot(commands.AutoShardedBot):
 
     async def startup_task(self) -> None:
         await self.wait_until_ready()
-        await self.cogs["Music"].start_nodes()
         guild_id, channel_id, message_id, variable = [int(var) for var in
                                                       await self.redis.hmget("restart", "guild_id", "channel_id",
                                                                              "message_id", "to_send")]
@@ -45,6 +44,7 @@ class SnowBot(commands.AutoShardedBot):
     os.environ["JISHAKU_RETAIN"] = "True"
 
     async def on_ready(self):
+        await self.cogs["Music"].start_nodes()
         print('-' * 25)
         print(f"{client} is now online!")
         print('-' * 25)
