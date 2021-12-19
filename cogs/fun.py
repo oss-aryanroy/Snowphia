@@ -37,7 +37,7 @@ class Fun(commands.Cog):
                                               f"\n{character.game_description}\n```",
                                   color=self.bot.theme)
             act = "Actress" if "female" in character.gender else "Actor"
-            iterable = [('Rating', character.star_rank),
+            iterable = [('Rating', int(character.star_rank)*"\N{White Medium Star}"),
                         ('Vision', character.vision),
                         ('Weapon', character.weapon),
                         ('Gender', character.gender),
