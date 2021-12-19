@@ -94,8 +94,8 @@ class Music(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         await self.bot.wait_until_ready()
-        if not hasattr(bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
-            self.bot.lavalink = lavalink.Client(bot.user.id)
+        if not hasattr(self.bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
+            self.bot.lavalink = lavalink.Client(self.bot.user.id)
             self.bot.lavalink.add_node('lavalinkonreplit.icerose.repl.co', 443, 'asecurepasswordlol', 'eu',
                                   'default-node')  # Host, Port, Password, Region, Name
 
