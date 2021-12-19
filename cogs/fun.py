@@ -3,6 +3,7 @@ import discord
 from io import BytesIO
 from utils import cmds
 from VishAPI import NotFound
+from VishAPI.objects import Character
 from VishAPI.client import GenshinEndpoint, ImageEndpoint
 from discord.ext import commands
 from typing import Union, Optional
@@ -25,11 +26,28 @@ class Fun(commands.Cog):
         if not ctx.subcommand_passed:
             await ctx.send_help(ctx.command)
 
-    @genshin.command(aliases=['character'])
+    @genshin.command(aliases=['char'])
     async def character(self, ctx: commands.Context, *, name: str):
         try:
-            character = await self.genshin.request('character', name.lower())
-            embed = discord.Embed(title=f"About {character.name}", description=character)
+            character: Character = await self.genshin.request('character', name.lower())
+            embed = discord.Embed(title=f"About {character.name}", description=f"```css\n[General Description]"
+                                                                               "\n{character.description}\n\n"
+                                                                               "[Game Description]"
+                                                                               "\n{character.game_description}\n```")
+            act = "Actor" if "male" in character.gender else "Actress"
+            iterable = [('Rating', character.star_rating),
+                        ('Vision', character.vision),
+                        ('Weapon', character.weapon),
+                        ('Gender', character.gender),
+                        ('Birthday', character.birthday),
+                        ('Constellation', character.constellation),
+                        (f'Japanese Voice {act}', character.voice_actor_jp),
+                        (f'English Voice {act}', character.voice_actor_en),
+                        ]
+            for name, value in iterable:
+                embed.add_field(name=name, value=value)
+            embed.set_image(url=character.image.url)
+            await ctx.reply(embed=embed, mention_author=False)
         except NotFound:
             return await ctx.send(f'No character with the name \'{name}\' was found!')
 
