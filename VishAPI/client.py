@@ -43,7 +43,7 @@ class GenshinEndpoint:
         func = self._key_check.get(endpoint)
         raw = kwargs.pop('raw', False)
         base_url = f"https://api.kozumikku.tech/genshin/{endpoint}/{name}"
-        response = await self.http.request(base_url, raw=raw)
+        response = await self.http.request(base_url)
         if raw:
             return response
         return func(response)

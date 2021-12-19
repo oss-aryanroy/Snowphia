@@ -43,7 +43,6 @@ class HTTPClient:
 
     async def request(self, route: str, **kwargs):
         self._create_session()
-        io = kwargs.pop('io', False)
         headers = {"Authorization": self._token}
         async with self.__session.get(route, params=kwargs, headers=headers) as response:
             if response.ok:
