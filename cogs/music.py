@@ -23,9 +23,13 @@ class LavalinkVoiceClient(discord.VoiceClient):
     """
 
     def __init__(self, client: discord.Client, channel: discord.abc.Connectable):
+        super().__init__(client, channel)
         self.client = client
         self.channel = channel
+        self.lavalink = None
         # ensure there exists a client already
+
+    async def on_ready(self):
         if hasattr(self.client, 'lavalink'):
             self.lavalink = self.client.lavalink
         else:
