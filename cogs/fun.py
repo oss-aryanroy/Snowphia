@@ -30,10 +30,12 @@ class Fun(commands.Cog):
     async def character(self, ctx: commands.Context, *, name: str):
         try:
             character: Character = await self.genshin.request('character', name.lower())
-            embed = discord.Embed(title=f"About {character.name}", description="```css\n[General Description]"
-                                                                               f"\n{character.description}\n\n"
-                                                                               "[Game Description]"
-                                                                               f"\n{character.game_description}\n```")
+            embed = discord.Embed(title=f"About {character.name}",
+                                  description="```css\n[General Description]"
+                                              f"\n{character.description}\n\n"
+                                              "[Game Description]"
+                                              f"\n{character.game_description}\n```",
+                                  color=self.bot.theme)
             act = "Actress" if "female" in character.gender else "Actor"
             iterable = [('Rating', character.star_rank),
                         ('Vision', character.vision),
