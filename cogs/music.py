@@ -1,12 +1,11 @@
 import pomice
+import discord
 from discord.ext import commands
 
 
 class Music(commands.Cog):
-
     def __init__(self, bot) -> None:
         self.bot = bot
-
         self.pomice = pomice.NodePool()
 
     async def start_nodes(self):
