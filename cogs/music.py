@@ -23,42 +23,37 @@ class LavalinkVoiceClient(discord.VoiceClient):
     """
 
     def __init__(self, client: discord.Client, channel: discord.abc.Connectable):
-        super().__init__(client, channel)
         self.client = client
         self.channel = channel
-        self.lavalink = None
         # ensure there exists a client already
-
-    async def on_ready(self):
-        await self.client.wait_until_ready()
         if hasattr(self.client, 'lavalink'):
             self.lavalink = self.client.lavalink
         else:
             self.client.lavalink = lavalink.Client(client.user.id)
             self.client.lavalink.add_node(
-                    'lavalinkonreplit.icerose.repl.co',
-                    443,
-                    'asecurepasswordlol',
-                    'us',
-                    'default-node')
+                'lavalinkonreplit.icerose.repl.co',
+                443,
+                'asecurepasswordlol',
+                'us',
+                'default-node')
             self.lavalink = self.client.lavalink
 
     async def on_voice_server_update(self, data):
         # the data needs to be transformed before being handed down to
         # voice_update_handler
         lavalink_data = {
-                't': 'VOICE_SERVER_UPDATE',
-                'd': data
-                }
+            't': 'VOICE_SERVER_UPDATE',
+            'd': data
+        }
         await self.lavalink.voice_update_handler(lavalink_data)
 
     async def on_voice_state_update(self, data):
         # the data needs to be transformed before being handed down to
         # voice_update_handler
         lavalink_data = {
-                't': 'VOICE_STATE_UPDATE',
-                'd': data
-                }
+            't': 'VOICE_STATE_UPDATE',
+            'd': data
+        }
         await self.lavalink.voice_update_handler(lavalink_data)
 
     async def connect(self, *, timeout: float, reconnect: bool) -> None:
@@ -96,9 +91,12 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def on_ready(self):
+        await self.bot.wait_until_ready()
         if not hasattr(bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
-            bot.lavalink = lavalink.Client(bot.user.id)
-            bot.lavalink.add_node('lavalinkonreplit.icerose.repl.co', 443, 'asecurepasswordlol', 'eu', 'default-node')  # Host, Port, Password, Region, Name
+            self.bot.lavalink = lavalink.Client(bot.user.id)
+            self.bot.lavalink.add_node('lavalinkonreplit.icerose.repl.co', 443, 'asecurepasswordlol', 'eu',
+                                  'default-node')  # Host, Port, Password, Region, Name
 
         lavalink.add_event_hook(self.track_hook)
 
