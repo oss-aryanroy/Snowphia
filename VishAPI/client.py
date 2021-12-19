@@ -56,10 +56,17 @@ class ImageEndpoint:
         """
         Helper class for getting Manipulated Image from Kozumikku API
         """
-        if io is not None and not isinstance(io, bool):
-            raise TypeError("Excepted bool got", type(io))
+        self.handle_invalid_argument(io, session)
         self.io: bool = io
         self.http = HTTPClient(api_key, session=session)
+
+
+    @staticmethod
+    def handle_invalid_argument(io, session):
+        if io is not None and not isinstance(io, bool):
+            raise TypeError("Excepted bool, got", type(io))
+        if session and not isinstance(session, aiohttp.ClientSession):
+            raise TypeError("An Improper session was passed.")
 
     @staticmethod
     async def _create_session():
@@ -70,4 +77,6 @@ class ImageEndpoint:
         base_url = f"https://api.kozumikku.tech/image/{endpoint}"
         kwargs.update({'io': self.io})
         response = await self.http.request(base_url, **kwargs)
+        if self.io:
+            response = BytesIO(response)
         return response

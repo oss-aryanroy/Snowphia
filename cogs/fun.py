@@ -2,6 +2,7 @@ import config
 import discord
 from io import BytesIO
 from utils import cmds
+from VishAPI import NotFound
 from VishAPI.client import GenshinEndpoint, ImageEndpoint
 from discord.ext import commands
 from typing import Union, Optional
@@ -18,6 +19,19 @@ class Fun(commands.Cog):
         await self.bot.wait_until_ready()
         self.image = ImageEndpoint(api_key=config.VISHAPI, session=self.bot.session, io=True)
         self.genshin = GenshinEndpoint(api_key=config.VISHAPI, session=self.bot.session)
+
+    @commands.group()
+    async def genshin(self, ctx: commands.Context):
+        if not ctx.subcommand_passed:
+            await ctx.send_help(ctx.command)
+
+    @genshin.command(aliases=['character'])
+    async def character(self, ctx: commands.Context, *, name: str):
+        try:
+            character = await self.genshin.request('character', name.lower())
+            embed = discord.Embed(title=f"About {character.name}", description=character)
+        except NotFound:
+            return await ctx.send(f'No character with the name \'{name}\' was found!')
 
     @commands.command(aliases=['solar'])
     async def solarize(self, ctx: commands.Context, member: Union[discord.Member, discord.User] = None):
