@@ -44,7 +44,6 @@ class SnowBot(commands.AutoShardedBot):
     os.environ["JISHAKU_RETAIN"] = "True"
 
     async def on_ready(self):
-        await self.cogs["Music"].start_nodes()
         print('-' * 25)
         print(f"{client} is now online!")
         print('-' * 25)
@@ -118,6 +117,7 @@ for filename in os.listdir('./cogs'):
 
 try:
     client.loop.create_task(client.startup_task())
+    client.loop.create_task(client.cogs["Music"].start_nodes())
     client.run(config.TOKEN)
 except discord.LoginFailure:
     print('Looks like The bot failed to log in.')
