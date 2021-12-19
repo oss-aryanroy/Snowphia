@@ -27,25 +27,30 @@ class HTTPClient:
         return None
 
     @staticmethod
-    def handle_exception(resp: aiohttp.ClientResponse):
-        if resp.status == 404:
-            raise NotFound(data, resp)
-        elif resp.status >= 500:
-            raise KozumikkuServerError(data, resp)
-        elif resp.status == 403:
-            raise Forbidden(data, resp)
-        elif resp.status == 429:
-            raise Ratelimited(data, resp)
-        elif resp.status == 401:
-            raise Unauthorized(data, resp)
-        else:
-            raise HTTPException(data, resp)
+    def handle_exception(resp: aiohttp.ClientResponse, data):
+        match resp.status:
+            case 404:
+                raise NotFound(data, resp)
+            case resp.status if resp.status >= 500:
+                raise KozumikkuServerError(data, resp)
+            case 403:
+                raise Forbidden(data, resp)
+            case 429:
+                raise Ratelimited(data, resp)
+            case 401:
+                raise Unauthorized(data, resp)
+            case _:
+                raise HTTPException(data, resp)
 
     async def request(self, route: str, **kwargs):
         self._create_session()
         headers = {"Authorization": self._token}
         async with self.__session.get(route, params=kwargs, headers=headers) as response:
+            result = await parse_response(response)
             if response.ok:
-                result = await parse_response(response)
                 return result
-            self.handle_exception(response)
+            self.handle_exception(response, result)
+
+    async def close(self):
+        if self.__session and not self.__session.closed:
+            await self.__session.close()
