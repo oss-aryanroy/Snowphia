@@ -48,7 +48,7 @@ class HTTPClient:
         io = kwargs.pop('io', False)
         headers = {"Authorization": self._token}
         async with self.__session.get(route, params=kwargs, headers=headers) as response:
-            if resp.ok:
+            if response.ok:
                 result = parse_response(response, io=io)
                 return result
             self.handle_exception(response)
