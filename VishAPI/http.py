@@ -43,11 +43,11 @@ class HTTPClient:
         else:
             raise HTTPException(data, resp)
 
-    async def request(self, url: str, **kwargs):
+    async def request(self, route: str, **kwargs):
         self._create_session()
         io = kwargs.pop('io', False)
         headers = {"Authorization": self._token}
-        async with self.__session.get(url, params=kwargs, headers=headers) as response:
+        async with self.__session.get(route, params=kwargs, headers=headers) as response:
             if resp.ok:
                 result = parse_response(response, io=io)
                 return result
