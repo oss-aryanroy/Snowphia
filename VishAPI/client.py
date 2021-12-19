@@ -68,5 +68,6 @@ class ImageEndpoint:
 
     async def request(self, endpoint: str, **kwargs):
         base_url = f"https://api.kozumikku.tech/image/{endpoint}"
+        kwargs.update({'io': self.io})
         response = await self.http.request(base_url, **kwargs)
         return response
