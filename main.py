@@ -59,8 +59,7 @@ async def get_prefix(bot: SnowBot, message: discord.Message):
         return ['sn!', ]
 
 
-intents = discord.Intents(members=True, bans=True, guilds=True, messages=True, presences=True, dm_reactions=True,
-                          reactions=True)
+intents = discord.Intents.all()
 client = SnowBot(command_prefix=get_prefix,
                  intents=intents,
                  slash_commands=True)
