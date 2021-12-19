@@ -31,11 +31,11 @@ class LavalinkVoiceClient(discord.VoiceClient):
         else:
             self.client.lavalink = lavalink.Client(client.user.id)
             self.client.lavalink.add_node(
-                'heroku-app-work-pls.herokuapp.com',
-                2333,
-                'youshallnotpass',
-                'us',
-                'default-node')
+                 'localhost',
+                 2333,
+                 'youshallnotpass',
+                 'us',
+                 'default-node')
             self.lavalink = self.client.lavalink
 
     async def on_voice_server_update(self, data):
@@ -96,7 +96,7 @@ class Music(commands.Cog):
         await self.bot.wait_until_ready()
         if not hasattr(self.bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
             self.bot.lavalink = lavalink.Client(self.bot.user.id)
-            self.bot.lavalink.add_node('heroku-app-work-pls.herokuapp.com', 2333, 'youshallnotpass', 'us',
+            self.bot.lavalink.add_node('localhost', 2333, 'youshallnotpass', 'us',
                                   'default-node')  # Host, Port, Password, Region, Name
 
         lavalink.add_event_hook(self.track_hook)
