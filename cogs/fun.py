@@ -35,7 +35,7 @@ class Fun(commands.Cog):
                                                                                "[Game Description]"
                                                                                "\n{character.game_description}\n```")
             act = "Actor" if "male" in character.gender else "Actress"
-            iterable = [('Rating', character.star_rating),
+            iterable = [('Rating', character.star_rank),
                         ('Vision', character.vision),
                         ('Weapon', character.weapon),
                         ('Gender', character.gender),
