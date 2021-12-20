@@ -177,7 +177,9 @@ class Music(commands.Cog):
                 time = self.convert(*args)
                 await ctx.send(time)
                 player = self.bot.lavalink.player_manager.get(ctx.guild.id)
-                await player.seek(time*1000)
+                time = time * 1000
+                await ctx.send(time)
+                await player.seek(time)
                 await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
             except ValueError:
                 return await ctx.send('Provided a wrong value')
