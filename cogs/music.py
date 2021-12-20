@@ -63,11 +63,6 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def convert(*args):
-        standard = (1, 60, 3600, 21600)[:len(args)]
-        return sum([args[standard.index(stand)]*stand for stand in standard])
-
-
     async def get_correct_thumbnail(self, track: dict):
         priority = ('maxresdefault', 'hq720', 'sddefault')
         for value in priority:
@@ -77,6 +72,11 @@ class Music(commands.Cog):
                 return url
             continue
         return False
+
+    @staticmethod
+    def convert(*args):
+        standard = (1, 60, 3600, 21600)[:len(args)]
+        return sum([args[standard.index(stand)] * stand for stand in standard])
 
     @staticmethod
     async def handle_except(player: lavalink.DefaultPlayer, ctx: commands.Context):
