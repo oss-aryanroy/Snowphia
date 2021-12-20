@@ -170,7 +170,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def seek(self, ctx: commands.Context, *, timestamp: Union[int, str]):
-        if isinstance(str, timestamp):
+        if isinstance(timestamp, str):
             try:
                 time = self.convert(*[int(s) for s in timestamp.split(':')][::-1])
                 player = self.bot.lavalink.player_manager.get(ctx.guild.id)
