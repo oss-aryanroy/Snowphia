@@ -97,10 +97,10 @@ class Music(commands.Cog):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(error.original)
 
-    async def get_correct_thumbnail(self, track: lavalink.AudioTrack):
+    async def get_correct_thumbnail(self, track: dict):
         priority = ('maxresdefault', 'hq720', 'sddefault')
         for value in priority:
-            url = f"https://i.ytimg.com/vi/{track.identifier}/{value}.jpg"
+            url = f"https://i.ytimg.com/vi/{track['info']['identifier']}/{value}.jpg"
             session = await self.bot.session.get(url)
             if session.ok:
                 return url
@@ -156,13 +156,11 @@ class Music(commands.Cog):
             track = results['tracks'][0]
             embed.title = 'Track Has been added to queue'
             embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})'
-
-            track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
             url = await self.get_correct_thumbnail(track)
             if not url:
                 url = "https://www.example.jpg"
+            track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
             embed.set_thumbnail(url=url)
-
             player.add(requester=ctx.author.id, track=track)
         await ctx.send(embed=embed)
         if not player.is_playing:
