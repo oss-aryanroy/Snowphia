@@ -172,14 +172,9 @@ class Music(commands.Cog):
     async def seek(self, ctx: commands.Context, *, timestamp: Union[int, str]):
         if isinstance(timestamp, str):
             try:
-                args = [int(s) for s in timestamp.split(':')][::-1]
-                await ctx.send(args)
-                time = self.convert(*args)
-                await ctx.send(time)
+                time = self.convert(*[int(s) for s in timestamp.split(':')][::-1])
                 player = self.bot.lavalink.player_manager.get(ctx.guild.id)
-                time = time * 1000
-                await ctx.send(time)
-                await player.seek(time)
+                await player.seek(time*1000)
                 await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
             except ValueError:
                 return await ctx.send('Provided a wrong value')
