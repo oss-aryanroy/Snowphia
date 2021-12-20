@@ -9,6 +9,7 @@ import re
 
 import discord
 import lavalink
+from typing import Union
 from discord.ext import commands
 
 url_rx = re.compile(r'https?://(?:www\.)?.+')
@@ -66,6 +67,17 @@ class Music(commands.Cog):
         standard = (1, 60, 3600, 21600)[:len(args)]
         return sum([args[standard.index(stand)] * stand for stand in standard])
 
+
+    async def get_correct_thumbnail(self, track: dict):
+        priority = ('maxresdefault', 'hq720', 'sddefault')
+        for value in priority:
+            url = f"https://i.ytimg.com/vi/{track['info']['identifier']}/{value}.jpg"
+            session = await self.bot.session.get(url)
+            if session.ok:
+                return url
+            continue
+        return False
+
     @staticmethod
     async def handle_except(player: lavalink.DefaultPlayer, ctx: commands.Context):
         if not player.is_connected:
@@ -96,16 +108,6 @@ class Music(commands.Cog):
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(error.original)
-
-    async def get_correct_thumbnail(self, track: dict):
-        priority = ('maxresdefault', 'hq720', 'sddefault')
-        for value in priority:
-            url = f"https://i.ytimg.com/vi/{track['info']['identifier']}/{value}.jpg"
-            session = await self.bot.session.get(url)
-            if session.ok:
-                return url
-            continue
-        return False
 
     async def ensure_voice(self, ctx):
         player = self.bot.lavalink.player_manager.create(ctx.guild.id, endpoint=str(ctx.guild.region))
@@ -165,6 +167,21 @@ class Music(commands.Cog):
         await ctx.send(embed=embed)
         if not player.is_playing:
             await player.play()
+
+    @commands.command()
+    async def seek(self, ctx: commands.Context, *, timestamp: Union[int, str]):
+        if isinstance(str, timestamp):
+            try:
+                time = self.convert(*[int(s) for s in timestamp.split(':')][::-1])
+                player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+                await player.seek(time*1000)
+                await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
+            except ValueError:
+                return await ctx.send('Provided a wrong value')
+        else:
+            player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+            await player.seek(timestamp * 1000)
+            await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
 
     @commands.command()
     async def stop(self, ctx: commands.Context):
