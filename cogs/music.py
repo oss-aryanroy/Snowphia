@@ -149,8 +149,8 @@ class Music(commands.Cog):
                 url = "https://www.example.jpg"
             for track in tracks:
                 player.add(requester=ctx.author.id, track=track)
-            embed.title = 'Playlist Enqueued!'
-            embed.set_image(url=url)
+            embed.title = 'Tracks Have been added to the queue'
+            embed.set_thumbnail(url=url)
             embed.description = f'{results["playlistInfo"]["name"]} - {len(tracks)} tracks'
         else:
             track = results['tracks'][0]
@@ -172,12 +172,14 @@ class Music(commands.Cog):
         await self.handle_except(player, ctx)
         player.queue.clear()
         await player.stop()
+        await ctx.message.add_reaction('⏹️')
 
     @commands.command()
     async def skip(self, ctx: commands.Context):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         await self.handle_except(player, ctx)
         await player.skip()
+        await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
 
     @commands.command(aliases=['dc'])
     async def disconnect(self, ctx):
