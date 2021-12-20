@@ -65,7 +65,7 @@ class Music(commands.Cog):
 
     def convert(*args):
         standard = (1, 60, 3600, 21600)[:len(args)]
-        return sum([args[standard.index(stand)] * stand for stand in standard])
+        return sum([args[standard.index(stand)]*stand for stand in standard])
 
 
     async def get_correct_thumbnail(self, track: dict):
@@ -172,7 +172,10 @@ class Music(commands.Cog):
     async def seek(self, ctx: commands.Context, *, timestamp: Union[int, str]):
         if isinstance(timestamp, str):
             try:
-                time = self.convert(*[int(s) for s in timestamp.split(':')][::-1])
+                args = [int(s) for s in timestamp.split(':')][::-1]
+                await ctx.send(args)
+                time = self.convert(*args)
+                await ctx.send(time)
                 player = self.bot.lavalink.player_manager.get(ctx.guild.id)
                 await player.seek(time*1000)
                 await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
