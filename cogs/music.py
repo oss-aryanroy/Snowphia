@@ -143,7 +143,7 @@ class Music(commands.Cog):
         embed = discord.Embed(color=self.bot.theme)
         if results['loadType'] == 'PLAYLIST_LOADED':
             tracks = results['tracks']
-            await ctx.send(tracks)
+            await ctx.send(tracks[0])
             url = await self.get_correct_thumbnail(tracks[0])
             if not url:
                 url = "https://www.example.jpg"
