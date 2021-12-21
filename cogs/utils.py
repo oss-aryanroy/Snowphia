@@ -257,7 +257,7 @@ class MyUtils(commands.Cog):
     @commands.cooldown(5, 60.0, type=commands.BucketType.user)
     async def spotify(self, ctx: commands.Context, member: discord.Member = None):
         if not ctx.interaction and not member:
-            member = (await ctx.guild.query_members(user_ids=[ctx.author.id]))[0]
+            member = (await ctx.guild.query_members(user_ids=[ctx.author.id], presences=True))[0]
         else:
             member = member or ctx.author
         async with ctx.typing():
