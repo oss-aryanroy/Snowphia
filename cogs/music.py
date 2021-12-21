@@ -189,6 +189,7 @@ class Music(commands.Cog):
         await self.handle_except(player, ctx)
         player.queue.clear()
         await player.stop()
+        await ctx.voice_client.disconnect(force=True)
         await ctx.message.add_reaction('⏹️')
 
     @commands.command()
@@ -206,6 +207,7 @@ class Music(commands.Cog):
         await player.stop()
         await ctx.voice_client.disconnect(force=True)
         await ctx.send('*⃣ | Disconnected.')
+        await ctx.message.add_reaction('⏹️')
 
 
 def setup(bot):

@@ -256,7 +256,10 @@ class MyUtils(commands.Cog):
     @commands.command(aliases=['sp'])
     @commands.cooldown(5, 60.0, type=commands.BucketType.user)
     async def spotify(self, ctx: commands.Context, member: discord.Member = None):
-        member = member or ctx.author
+        if not ctx.interaction and not member:
+            member = (await ctx.guild.query_members(user_ids=[ctx.author.id]))[0]
+        else:
+            member = member or ctx.author
         async with ctx.typing():
             spotify = Spotify(bot=self.client, member=member)
             embed = await spotify.get_embed()
