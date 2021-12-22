@@ -1,7 +1,6 @@
 ﻿import os
 import asyncio
 import aioredis
-import git
 import config
 import aiohttp
 import discord
@@ -56,7 +55,7 @@ async def get_prefix(bot: SnowBot, message: discord.Message):
     if client.debugger and await bot.is_owner(message.author):
         return ['', 'sn!']
     else:
-        return ['sn!', ]
+        return ['sn!',]
 
 
 intents = discord.Intents.all()
