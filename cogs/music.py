@@ -187,8 +187,8 @@ class Music(commands.Cog):
     async def pause(self, ctx: commands.Context):
         player: lavalink.PlayerManager = self.bot.lavalink.player_manager.get(ctx.guild.id)
         await self.handle_except(player, ctx)
-        if player.is_playing:
-            await player.pause()
+        if not player.paused:
+            await player.set_pause(True)
             await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
         else:
             await ctx.send("Nothing is playing right now.")
@@ -197,8 +197,8 @@ class Music(commands.Cog):
     async def unpause(self, ctx: commands.Context):
         player: lavalink.PlayerManager = self.bot.lavalink.player_manager.get(ctx.guild.id)
         await self.handle_except(player, ctx)
-        if not player.is_playing:
-            await player.resume()
+        if player.paused:
+            await player.set_pause(False)
             await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
         else:
             await ctx.send("Player is already playing!")
