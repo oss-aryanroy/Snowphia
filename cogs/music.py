@@ -163,6 +163,7 @@ class Music(commands.Cog):
         if results['loadType'] == 'PLAYLIST_LOADED':
             tracks = results['tracks']
             for track in tracks:
+                track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True, channel_id=ctx.channel.id)
                 player.add(requester=ctx.author.id, track=track, channel_id=ctx.channel.id)
             embed.title = 'Tracks Have been added to the queue'
             embed.description = f'{results["playlistInfo"]["name"]} - {len(tracks)} tracks'
@@ -170,8 +171,8 @@ class Music(commands.Cog):
             track = results['tracks'][0]
             embed.title = 'Track Has been added to queue'
             embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})'
-            track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
-            player.add(requester=ctx.author.id, track=track, channel_id=ctx.channel.id)
+            track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True, channel_id=ctx.channel.id)
+            player.add(requester=ctx.author.id, track=track)
         await ctx.send(embed=embed)
         await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
         if not player.is_playing:
