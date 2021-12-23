@@ -1,5 +1,6 @@
 import re
 import discord
+from discord.ext.commands.core import after_invoke
 import lavalink
 from typing import Union
 from discord.ext import commands
@@ -9,6 +10,7 @@ url_rx = re.compile(r'https?://(?:www\.)?.+')
 
 class LavalinkVoiceClient(discord.VoiceClient):
     def __init__(self, client: commands.AutoShardedBot, channel: discord.abc.Connectable):
+
         self.client = client
         self.channel = channel
 
@@ -56,16 +58,6 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def get_correct_thumbnail(self, track: dict):
-        priority = ('maxresdefault', 'hq720', 'sddefault')
-        for value in priority:
-            url = f"https://i.ytimg.com/vi/{track['info']['identifier']}/{value}.jpg"
-            session = await self.bot.session.get(url)
-            if session.ok:
-                return url
-            continue
-        return False
-
     @staticmethod
     def convert(*args):
         standard = (1, 60, 3600, 21600)[:len(args)]
@@ -106,6 +98,25 @@ class Music(commands.Cog):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(error.original)
 
+    async def create_embed(self, guild: discord.Guild, track: lavalink.AudioTrack):
+        channel_id = track.extra.get('channel_id')
+
+        channel = guild.get_channel(channel_id)
+        if channel is None:
+            return
+
+        requester = guild.get_member(track.requester)
+        if requester is None:
+            requester = "Unknown"
+        else:
+            requester = requester.display_name
+
+        embed = discord.Embed(color=self.bot.theme)
+        embed.title = 'Now playing:'
+        embed.description = f'[{track.title}]({track.url})'
+        embed.set_footer(text=f"Requested By: {requester}")
+        await channel.send(embed=embed)
+
     async def ensure_voice(self, ctx):
         player = self.bot.lavalink.player_manager.create(ctx.guild.id, endpoint=str(ctx.guild.region))
         should_connect = ctx.command.name in ('play',)
@@ -129,6 +140,15 @@ class Music(commands.Cog):
             guild_id = int(event.player.guild_id)
             guild = self.bot.get_guild(guild_id)
             await guild.voice_client.disconnect(force=True)
+        elif isinstance(event, lavalink.events.TrackStartEvent):
+            self.bot.dispatch('lavalink_track_start', event.player, event.track)
+
+    
+    @commands.Cog.listener()
+    async def on_lavalink_track_start(self, player: lavalink.PlayerManager, track):
+        guild = await self.bot.get_guild(player.guild_id)
+        await self.create_embed(guild, track)
+
 
     @commands.command(aliases=['p'])
     async def play(self, ctx, *, query: str):
@@ -142,25 +162,18 @@ class Music(commands.Cog):
         embed = discord.Embed(color=self.bot.theme)
         if results['loadType'] == 'PLAYLIST_LOADED':
             tracks = results['tracks']
-            await ctx.send(tracks[0])
-            url = await self.get_correct_thumbnail(tracks[0])
-            if url:
-                embed.set_thumbnail(url=url)
             for track in tracks:
-                player.add(requester=ctx.author.id, track=track)
+                player.add(requester=ctx.author.id, track=track, channel_id=ctx.channel.id)
             embed.title = 'Tracks Have been added to the queue'
             embed.description = f'{results["playlistInfo"]["name"]} - {len(tracks)} tracks'
         else:
             track = results['tracks'][0]
             embed.title = 'Track Has been added to queue'
             embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})'
-            url = await self.get_correct_thumbnail(track)
-            if url:
-                embed.set_thumbnail(url=url)
             track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
-            embed.set_thumbnail(url=url)
-            player.add(requester=ctx.author.id, track=track)
+            player.add(requester=ctx.author.id, track=track, channel_id=ctx.channel.id)
         await ctx.send(embed=embed)
+        await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
         if not player.is_playing:
             await player.play()
 
