@@ -32,10 +32,10 @@ class Query():
         await self.writer.drain()
         data = await self.reader.read(100)
         res = data
-        res = parser.decoded(res)
+        res = res.decode("utf-8")
         catching = CatchException(text=res)
         catched = await catching.catch_error()
-        return catched
+        return parser.decoded(catched.encode('utf-8'))
         
     async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
         command = getattr(protocol, 'command', None)
