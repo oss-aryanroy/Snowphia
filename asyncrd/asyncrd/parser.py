@@ -52,5 +52,6 @@ class Parser():
             if text.startswith(results[3]):
                 res = results[3]
                 text = text.strip(res)
+            return text
         elif prot == -1:
             raise RedisException("{0} was not present in the result.".format(PROTOCOL))
