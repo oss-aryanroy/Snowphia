@@ -139,20 +139,19 @@ class Music(commands.Cog):
             tracks = results['tracks']
             await ctx.send(tracks[0])
             url = await self.get_correct_thumbnail(tracks[0])
-            if not url:
-                url = "https://www.example.jpg"
+            if url:
+                embed.set_thumbnail(url=url)
             for track in tracks:
                 player.add(requester=ctx.author.id, track=track)
             embed.title = 'Tracks Have been added to the queue'
-            embed.set_thumbnail(url=url)
             embed.description = f'{results["playlistInfo"]["name"]} - {len(tracks)} tracks'
         else:
             track = results['tracks'][0]
             embed.title = 'Track Has been added to queue'
             embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})'
             url = await self.get_correct_thumbnail(track)
-            if not url:
-                url = "https://www.example.jpg"
+            if url:
+                embed.set_thumbnail(url=url)
             track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
             embed.set_thumbnail(url=url)
             player.add(requester=ctx.author.id, track=track)
