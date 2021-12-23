@@ -146,7 +146,7 @@ class Music(commands.Cog):
     
     @commands.Cog.listener()
     async def on_lavalink_track_start(self, player: lavalink.PlayerManager, track):
-        guild = await self.bot.get_guild(player.guild_id)
+        guild = self.bot.get_guild(player.guild_id)
         await self.create_embed(guild, track)
 
 
