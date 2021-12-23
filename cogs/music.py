@@ -113,7 +113,7 @@ class Music(commands.Cog):
 
         embed = discord.Embed(color=self.bot.theme)
         embed.title = 'Now playing:'
-        embed.description = f'[{track.title}]({track.url})'
+        embed.description = f'[{track.title}]({track.uri})'
         embed.set_footer(text=f"Requested By: {requester}")
         await channel.send(embed=embed)
 
