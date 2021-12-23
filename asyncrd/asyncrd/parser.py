@@ -32,7 +32,7 @@ class Parser():
             regex = "(\${1}[0-9])"
             found = re.findall(regex, text)
             if found:
-                text.strip(found[0])
+                text = text.strip(found[0])
             else:
                 raise RedisException("Not Valid")
             return text
