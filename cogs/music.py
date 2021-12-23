@@ -79,7 +79,7 @@ class Music(commands.Cog):
         return sum([args[standard.index(stand)] * stand for stand in standard])
 
     @staticmethod
-    async def handle_except(player: lavalink.DefaultPlayer, ctx: commands.Context):
+    async def handle_except(player: lavalink.PlayerManager, ctx: commands.Context):
         if not player.is_connected:
             return await ctx.send('Bot is not connected to a VC')
         if not ctx.author.voice or (player.is_connected and ctx.author.voice.channel.id != int(player.channel_id)):
@@ -182,6 +182,27 @@ class Music(commands.Cog):
             player = self.bot.lavalink.player_manager.get(ctx.guild.id)
             await player.seek(timestamp * 1000)
             await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
+
+    @commands.command()
+    async def pause(self, ctx: commands.Context):
+        player: lavalink.PlayerManager = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        await self.handle_except(player, ctx)
+        if player.is_playing:
+            await player.pause()
+            await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
+        else:
+            await ctx.send("Nothing is playing right now.")
+
+    @commands.command()
+    async def unpause(self, ctx: commands.Context):
+        player: lavalink.PlayerManager = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        await self.handle_except(player, ctx)
+        if not player.is_playing:
+            await player.resume()
+            await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
+        else:
+            await ctx.send("Player is already playing!")
+
 
     @commands.command()
     async def stop(self, ctx: commands.Context):
