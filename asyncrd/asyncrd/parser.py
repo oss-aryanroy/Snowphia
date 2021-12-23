@@ -18,13 +18,13 @@ class RedisWrongType(BaseRedisException):
 PROTOCOL = "\r\n"
 
 class Parser():
-    async def encode(self, command, query):
+    async def encoded(self, command, query):
         res = f"*2{PROTOCOL}$4{PROTOCOL}{command}{PROTOCOL}{query}{PROTOCOL}".encode()
         if command == "GET":
             res = f"*1{PROTOCOL}$4{PROTOCOL}{command}{PROTOCOL}{query}{PROTOCOL}".encode()
         return res
     
-    def decode(self, text):
+    def decoded(self, text):
         text = text.decode("utf-8")
         prot = 0
         if prot == 0:

@@ -35,7 +35,7 @@ class Query():
         res = res.decode("utf-8")
         catching = CatchException(text=res)
         catched = await catching.catch_error()
-        decoded = parser.decode(catched)
+        decoded = parser.decoded(catched)
         return decoded
         
     async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
