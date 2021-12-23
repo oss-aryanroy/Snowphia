@@ -1,4 +1,5 @@
 import aioconsole, io
+import re
 
 class BaseRedisException(Exception):
     pass
@@ -28,30 +29,12 @@ class Parser():
         text = text.decode("utf-8")
         prot = 0
         if prot == 0:
-            protocol_list = ['$', "-", "+"]
-            if text[0] not in protocol_list:
-                raise RedisException("These ({0}) were not present in the result.".format(", ".join(protocol_list)))
-            if "-1" in text:
-                protocol_list = ['$', '+']
-            for i in protocol_list:
-                text = text.strip(i)
-            text = text.strip(PROTOCOL)
-            results = ["ERR ", "WRONGTYPE ", "OK", "-1"]
-            if text.startswith(results[0]):
-                text = text.strip(results[0])
-                if "unknown" in text:
-                    raise RedisCommandUnknown(text)
-            if text.startswith(results[1]):
-                res = results[1]
-                text = text.strip(res)
-                raise RedisWrongType(text)
-            if text.startswith(results[2]):
-                res = results[2]
-                text = text.strip(res)
-                return "OK"
-            if text.startswith(results[3]):
-                res = results[3]
-                text = text.strip(res)
+            regex = "(\${1}[0-9])"
+            found = re.findall(regex, text)
+            if found:
+                text.strip(found[0])
+            else:
+                raise RedisException("Not Valid")
             return text
         elif prot == -1:
             raise RedisException("{0} was not present in the result.".format(PROTOCOL))
