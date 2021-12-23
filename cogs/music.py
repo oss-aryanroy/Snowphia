@@ -193,7 +193,7 @@ class Music(commands.Cog):
         else:
             await ctx.send("Nothing is playing right now.")
 
-    @commands.command()
+    @commands.command(aliases=['resume',])
     async def unpause(self, ctx: commands.Context):
         player: lavalink.PlayerManager = self.bot.lavalink.player_manager.get(ctx.guild.id)
         await self.handle_except(player, ctx)
