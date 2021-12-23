@@ -24,14 +24,13 @@ class Parser():
             res = f"*1{PROTOCOL}$4{PROTOCOL}{command}{PROTOCOL}{query}{PROTOCOL}".encode()
         return res
     
-    async def decode(self, text):
+    def decode(self, text):
         text = text.decode("utf-8")
         prot = 0
         if prot == 0:
             protocol_list = ['$', "-", "+"]
             if text[0] not in protocol_list:
                 raise RedisException("These ({0}) were not present in the result.".format(", ".join(protocol_list)))
-                return
             if "-1" in text:
                 protocol_list = ['$', '+']
             for i in protocol_list:
@@ -40,7 +39,7 @@ class Parser():
             results = ["ERR ", "WRONGTYPE ", "OK", "-1"]
             if text.startswith(results[0]):
                 text = text.strip(results[0])
-                if "unknown" in command:
+                if "unknown" in text:
                     raise RedisCommandUnknown(text)
             if text.startswith(results[1]):
                 res = results[1]
