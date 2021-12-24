@@ -1,10 +1,7 @@
-import asyncio, typing
+from typing import Tuple, Union
 from .exceptions import RedisException
 from .encoders import _encode_command_string, _encode_array, _encode_bulk_string, _encode_error, _encode_integer, _encode_simple_string
 from redis_protocol import decode as decoder
-from redis_protocol import encode as encoder
-
-CRLF = "\r\n"
 
 
 
@@ -14,7 +11,7 @@ class Result():
     
 class BasicProtocol():    
     def __init__(self, *query : str):
-        self.query : str = query
+        self.query : Tuple[str] = query
 
 class Set(BasicProtocol):
     command = 'SET'
@@ -29,7 +26,7 @@ class Get(BasicProtocol):
 
 
 class Route:
-    def __init__(self, protocol: typing.Union[Get, Set, BasicProtocol]) -> None:
+    def __init__(self, protocol: Union[Get, Set, BasicProtocol]) -> None:
         self._protocol = protocol
 
     def format_command(self, *args):
@@ -54,16 +51,19 @@ class Query():
     def __init__(self, connection):
         self.reader = connection.reader
         self.writer = connection.writer
+
+    async def write_data(self, data):
+        self.writer.write(data)
+        await self.writer.drain()
         
-    async def _execute_command(self, protocol):
+    async def _execute_command(self, protocol) -> str:
         route = Route(protocol)
         data_ = route.format_command(protocol.query)
-        self.writer.write(data_)
-        await self.writer.drain()
+        await self.write_data(data_)
         data = await self.reader.read(100)
         return decoder(data.decode('utf-8'))
         
-    async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
+    async def do_query(self, protocol : Union[Get, Set, BasicProtocol]):
         res = await self._execute_command(protocol)
         return res
     
