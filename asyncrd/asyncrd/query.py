@@ -20,8 +20,8 @@ class Set(BasicProtocol):
             
 class Get(BasicProtocol):
     command = 'GET'
-    def __init__(self, query: str):
-        super().__init__(query)
+    def __init__(self, key: str):
+        super().__init__(key)
 
 
 
@@ -58,7 +58,7 @@ class Query():
         
     async def _execute_command(self, protocol) -> str:
         route = Route(protocol)
-        data_ = route.format_command(protocol.query)
+        data_ = route.format_command(*protocol.query)
         await self.write_data(data_)
         data = await self.reader.read(100)
         return decoder(data.decode('utf-8'))
