@@ -33,7 +33,7 @@ class Route:
             raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
         command_formatted = "{0} {1}".format(self._protocol.command, " ".join(args))
         command = encoder(command_formatted)
-        return command.encode()
+        return command
 
 class Query():
     def __init__(self, connection):
