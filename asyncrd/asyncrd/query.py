@@ -46,7 +46,7 @@ class Query():
         data_ = route.format_command(protocol.query)
         self.writer.write(data_)
         await self.writer.drain()
-        data = await self.reader.read()
+        data = await self.reader.read(100)
         return decoder(data.decode())
         
     async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
