@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 import asyncio, socket
 from urllib.parse import urlparse
-from .query import Query, Get, Set, BasicProtocol
+from .models import Query, Get, Set, Delete
 from .exceptions import RedisException
 
 
@@ -70,5 +70,5 @@ class ConnectionProtocol():
         await self._do_connect_check()
         
         data = Query(self)
-        result = await data.do_query(Set(*keys))
+        result = await data.do_query(Delete(*keys))
         return result
