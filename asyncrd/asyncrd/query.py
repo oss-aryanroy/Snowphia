@@ -38,18 +38,16 @@ class Route:
             raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
         command_formatted = _encode_command_string(self._protocol.command, lonely=False)
         to_pass_args = [command_formatted,]
-        command = self._format_args(to_pass_args, args)
+        command = self._format_args(to_pass_args, *args)
         return command.encode("utf-8")
 
     def _format_args(self, to_pass_args, *args):
         for arg in args:
-                if isinstance(arg, int):
-                    parsed_arg = _encode_integer(arg)
-                elif isinstance(arg, str):
-                    parsed_arg = _encode_bulk_string(arg)
-
-                to_pass_args.append(parsed_arg)
-
+            if isinstance(arg, int):
+                parsed_arg = _encode_integer(arg)
+            elif isinstance(arg, str):
+                parsed_arg = _encode_bulk_string(arg)
+            to_pass_args.append(parsed_arg)
         command_string = _encode_array(to_pass_args)
         return command_string
 
