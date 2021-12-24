@@ -27,8 +27,7 @@ class CatchException():
     def __init__(self, text : str):
         self.text = text
         
-    async def catch_error(self):
-        parser = Parser()
+    def catch_error(self):
         res = self.text
         if "-ERR" in res or "-WRONGTYPE" in res:
             res = res.split("-ERR")

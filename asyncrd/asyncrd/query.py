@@ -14,33 +14,44 @@ class BasicProtocol():
 
 class Set(BasicProtocol):
     command = 'SET'
+    def __init__(self, query: str):
+        super().__init__(query)
             
 class Get(BasicProtocol):
     command = 'GET'
+    def __init__(self, query: str):
+        super().__init__(query)
+
+
+
+class Route:
+    def __init__(self, protocol: typing.Union[Get, Set, BasicProtocol]) -> None:
+        self._protocol = protocol
+
+    def format_command(self, *args):
+        if not args:
+            raise RedisException('No arguments were passed for {}'.format(self.protocol.command))
+        command_formatted = "{0} {1}".format(self.protocol.command, " ".join(args))
+        command = encoder(command_formatted)
+        return command.encode()
 
 class Query():
     def __init__(self, connection):
         self.reader = connection.reader
         self.writer = connection.writer
         
-    async def _execute_command(self, command: str, query : str):
+    async def _execute_command(self, protocol):
         parser = Parser()
-        data_ = encoder(command, query)
-        print(data_)
-        data_ = data_.encode()
+        route = Route(protocol)
+        data_ = route.format_command()
         self.writer.write(data_)
         await self.writer.drain()
         data = await self.reader.read(100)
-        res = data
-        res = res.decode("utf-8")
-        catching = CatchException(text=res)
-        catched = await catching.catch_error()
-        return parser.decoded(catched.encode('utf-8'))
+        catching = CatchException(text=data.decode('utf-8'))
+        catching.catch_error()
+        return decoder(data) 
         
     async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
-        command = getattr(protocol, 'command', None)
-        res = await self._execute_command(command, protocol.query)
-        if res.startswith("$"):
-            pass
+        res = await self._execute_command(protocol)
         return res
     
