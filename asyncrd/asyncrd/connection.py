@@ -1,7 +1,11 @@
 import asyncio
 
 from .models import (
-    Get, 
+    Get,
+    HSet,
+    HGet,
+    HMGet,
+    HMSet,
     Set, 
     Delete
 )
@@ -74,9 +78,37 @@ class ConnectionProtocol():
         result = await data.do_query(Set(key, value))
         return result
 
-    async def delete(self, *keys) -> Tuple[bool, str]:
+    async def delete(self, *keys) -> bool:
         await self._do_connect_check()
         
         data = Query(self)
         result = await data.do_query(Delete(*keys))
+        return bool(result[0])
+
+    async def hset(self, base: str, key: str, value: str) -> Tuple[bool, str]:
+        await self._do_connect_check()
+        
+        data = Query(self)
+        result = await data.do_query(HSet(base, key, value))
+        return result
+
+    async def hget(self, base: str, key: str) -> Tuple[bool, str]:
+        await self._do_connect_check()
+        
+        data = Query(self)
+        result = await data.do_query(HGet(base, key))
+        return result
+
+    async def hmset(self, base: str, *queries) -> Tuple[Tuple[bool, str]]:
+        await self._do_connect_check()
+        
+        data = Query(self)
+        result = await data.do_query(HMSet(base, *queries))
+        return result
+
+    async def hmget(self, base: str, *queries) -> Tuple[Optional[str]]:
+        await self._do_connect_check()
+        
+        data = Query(self)
+        result = await data.do_query(HMGet(base, *queries))
         return result

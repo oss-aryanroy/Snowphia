@@ -3,7 +3,6 @@ from typing import (
     Optional
 )
 
-
 CRLF = "\r\n"
 
 def _encode_simple_string(text: str):
