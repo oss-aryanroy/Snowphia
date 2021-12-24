@@ -1,6 +1,5 @@
 import asyncio, typing
 from .exceptions import RedisException
-from .parser import Parser
 from .encoders import _encode_command_string, _encode_array, _encode_bulk_string, _encode_error, _encode_integer, _encode_simple_string
 from redis_protocol import decode as decoder
 from redis_protocol import encode as encoder
@@ -14,13 +13,13 @@ class Result():
         self.result : str = result          
     
 class BasicProtocol():    
-    def __init__(self, query : str):
+    def __init__(self, *query : str):
         self.query : str = query
 
 class Set(BasicProtocol):
     command = 'SET'
-    def __init__(self, query: str):
-        super().__init__(query)
+    def __init__(self, key: str, value: str):
+        super().__init__(key, value)
             
 class Get(BasicProtocol):
     command = 'GET'
@@ -57,7 +56,6 @@ class Query():
         self.writer = connection.writer
         
     async def _execute_command(self, protocol):
-        parser = Parser()
         route = Route(protocol)
         data_ = route.format_command(protocol.query)
         self.writer.write(data_)

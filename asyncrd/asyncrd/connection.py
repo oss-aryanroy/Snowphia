@@ -61,12 +61,12 @@ class ConnectionProtocol():
         await self._do_connect_check()
         
         data = Query(self)
-        result = await data.do_query(Get(query=query))
+        result = await data.do_query(Get(query))
         return result
 
-    async def set(self, query : str):
+    async def set(self, key: str, value: str):
         await self._do_connect_check()
         
         data = Query(self)
-        result = await data.do_query(Set(query=query))
+        result = await data.do_query(Set(key, value))
         return result
