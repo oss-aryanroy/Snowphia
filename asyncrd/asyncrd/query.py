@@ -1,19 +1,12 @@
 import asyncio, typing
-from .exceptions import CatchException, RedisException
+from .exceptions import RedisException
 from .parser import Parser
+from .encoders import *
 from redis_protocol import decode as decoder
 from redis_protocol import encode as encoder
 
 CRLF = "\r\n"
 
-def _encode_command_string(command: str, lonely: bool = True):
-    command = command.upper()
-
-    if lonely:
-        return (command + CRLF)
-        
-    length = len(command)
-    return (f"${length}" + CRLF + command + CRLF)
 
 
 class Result():
@@ -43,9 +36,22 @@ class Route:
     def format_command(self, *args):
         if not args:
             raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
-        arg = " ".join(args)
-        command_formatted = f"${len(self._protocol.command)}{CRLF}{arg}{CRLF}"
-        return command_formatted.encode('utf-8')
+        command_formatted = _encode_command_string(self._protocol.command, lonely=False)
+        to_pass_args = [command_formatted,]
+        command = self._format_args(to_pass_args, args)
+        return command.encode("utf-8")
+
+    def _format_args(self, to_pass_args, *args):
+        for arg in args:
+                if isinstance(arg, int):
+                    parsed_arg = _encode_integer(arg)
+                elif isinstance(arg, str):
+                    parsed_arg = _encode_bulk_string(arg)
+
+                to_pass_args.append(parsed_arg)
+
+        command_string = _encode_array(to_pass_args)
+        return command_string
 
 class Query():
     def __init__(self, connection):
