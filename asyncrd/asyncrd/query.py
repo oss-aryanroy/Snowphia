@@ -4,6 +4,18 @@ from .parser import Parser
 from redis_protocol import decode as decoder
 from redis_protocol import encode as encoder
 
+CRLF = "\r\n"
+
+def _encode_command_string(command: str, lonely: bool = True):
+    command = command.upper()
+
+    if lonely:
+        return (command + CRLF)
+        
+    length = len(command)
+    return (f"${length}" + CRLF + command + CRLF)
+
+
 class Result():
     def __init__(self, result : str):
         self.result : str = result          
@@ -31,9 +43,9 @@ class Route:
     def format_command(self, *args):
         if not args:
             raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
-        command_formatted = "{0} {1}".format(self._protocol.command, " ".join(args))
-        command = encoder(command_formatted)
-        return command.encode('utf-8')
+        arg = " ".join(args)
+        command_formatted = f"${len(self.command)}{CRLF}{arg}{CRLF}"
+        return command_formatted.encode('utf-8')
 
 class Query():
     def __init__(self, connection):
