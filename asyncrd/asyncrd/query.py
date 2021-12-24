@@ -33,7 +33,7 @@ class Route:
             raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
         command_formatted = "{0} {1}".format(self._protocol.command, " ".join(args))
         command = encoder(command_formatted)
-        return command.encode()
+        return command.encode('utf-8')
 
 class Query():
     def __init__(self, connection):
@@ -47,7 +47,7 @@ class Query():
         self.writer.write(data_)
         await self.writer.drain()
         data = await self.reader.read(100)
-        return decoder(data.decode())
+        return decoder(data.decode('utf-8'))
         
     async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
         res = await self._execute_command(protocol)
