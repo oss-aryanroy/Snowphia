@@ -1,5 +1,4 @@
 import asyncio
-
 from .models import (
     Get,
     HSet,
@@ -13,7 +12,7 @@ from .models import (
 from .query import Query
 from .exceptions import RedisException
 
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 
@@ -85,28 +84,28 @@ class ConnectionProtocol():
         result = await data.do_query(Delete(*keys))
         return bool(result[0])
 
-    async def hset(self, base: str, key: str, value: str) -> Tuple[bool, str]:
+    async def hset(self, base: str, key: str, value: str) -> bool:
         await self._do_connect_check()
         
         data = Query(self)
         result = await data.do_query(HSet(base, key, value))
-        return result
+        return bool(result[0])
 
-    async def hget(self, base: str, key: str) -> Tuple[bool, str]:
+    async def hget(self, base: str, key: str) -> Optional[Union[str, int, list, tuple, dict]]:
         await self._do_connect_check()
         
         data = Query(self)
         result = await data.do_query(HGet(base, key))
         return result
 
-    async def hmset(self, base: str, *queries) -> Tuple[Tuple[bool, str]]:
+    async def hmset(self, base: str, *queries) -> List[bool]:
         await self._do_connect_check()
         
         data = Query(self)
         result = await data.do_query(HMSet(base, *queries))
         return result
 
-    async def hmget(self, base: str, *queries) -> Tuple[Optional[str]]:
+    async def hmget(self, base: str, *queries) -> Optional[Union[str, int, list, tuple, dict]]:
         await self._do_connect_check()
         
         data = Query(self)
