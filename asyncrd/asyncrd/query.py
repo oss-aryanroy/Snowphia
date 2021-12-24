@@ -43,7 +43,7 @@ class Query():
     async def _execute_command(self, protocol):
         parser = Parser()
         route = Route(protocol)
-        data_ = route.format_command()
+        data_ = route.format_command(protocol.query)
         self.writer.write(data_)
         await self.writer.drain()
         data = await self.reader.read(100)
