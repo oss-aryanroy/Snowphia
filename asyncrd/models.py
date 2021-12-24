@@ -39,5 +39,8 @@ class Delete(BasicProtocol):
     def __init__(self, *keys: str):
         super().__init__(*keys)
 
+class Quit(BasicProtocol):
+    command = 'QUIT'
+
 
 

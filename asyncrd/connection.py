@@ -6,7 +6,8 @@ from .models import (
     HMGet,
     HMSet,
     Set, 
-    Delete
+    Delete,
+    Quit
 )
 
 from .query import Query
@@ -37,7 +38,8 @@ class ConnectionProtocol():
     async def close(self) ->None:
         if self._closed:
             raise RedisException('Connection is closed.')
-            
+        data = Query(self)
+        await data.do_query(Quit())           
         self.writer.close()
         await self.writer.wait_closed()
         self._closed = True

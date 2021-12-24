@@ -1,7 +1,7 @@
 from .models import BasicProtocol, Get, Set, HGet, HSet, HMGet, HMSet, Delete
 from typing import Union
 from .exceptions import RedisException
-from .encoders import _encode_command_string, _encode_array, _encode_bulk_string, _encode_integer
+from .encoders import format_command_string, encode_list, encode_string, encode_number
 from redis_protocol import decode as decoder
     
 class Route:
@@ -10,22 +10,25 @@ class Route:
 
     def format_command(self, *args):
         if not args:
-            raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
-        command_formatted = _encode_command_string(self._protocol.command, lonely=False)
+            if self._protocol.command != "QUIT":
+                raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
+            command = format_command_string(self._protocol.command)
+            return command.encode('utf-8')
+
+        command_formatted = format_command_string(self._protocol.command, lonely=False)
         to_pass_args = [command_formatted,]
         command = self._format_args(to_pass_args, *args)
         return command.encode("utf-8")
 
-    def _format_args(self, to_pass_args, *args):
-        for arg in args:
-            if isinstance(arg, int):
-                parsed_arg = _encode_integer(arg)
-            elif isinstance(arg, str):
-                parsed_arg = _encode_bulk_string(arg)
-            to_pass_args.append(parsed_arg)
-        command_string = _encode_array(to_pass_args)
+    def _format_args(self, to_pass: list, *arguments: list):
+        for argument in arguments:
+            if isinstance(argument, int):
+                return_arg = encode_number(argument)
+            elif isinstance(argument, str):
+                return_arg = encode_string(argument)
+            to_pass.append(return_arg)
+        command_string = encode_list(to_pass)
         return command_string
-
 
 class Query():
     def __init__(self, connection):

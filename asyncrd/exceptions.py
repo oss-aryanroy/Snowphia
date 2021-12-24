@@ -1,12 +1,9 @@
-import asyncio, typing
-import aioconsole
-
-class RedisOK():
-    def __init__(self, message : str):
-        self.msg = message
-        
 class BaseRedisException(Exception):
     pass
+
+class RedisOK(BaseRedisException):
+    def __init__(self, message : str):
+        self.msg = message
 
 class RedisException(BaseRedisException):
     def __init__(self, message : str):
