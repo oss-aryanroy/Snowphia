@@ -30,8 +30,8 @@ class Route:
 
     def format_command(self, *args):
         if not args:
-            raise RedisException('No arguments were passed for {}'.format(self.protocol.command))
-        command_formatted = "{0} {1}".format(self.protocol.command, " ".join(args))
+            raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
+        command_formatted = "{0} {1}".format(self._protocol.command, " ".join(args))
         command = encoder(command_formatted)
         return command.encode()
 
