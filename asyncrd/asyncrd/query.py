@@ -47,7 +47,7 @@ class Query():
         self.writer.write(data_)
         await self.writer.drain()
         data = await self.reader.read(100)
-        return decoder(data.decode())
+        return decoder(data)
         
     async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
         res = await self._execute_command(protocol)
