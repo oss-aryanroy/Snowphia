@@ -26,8 +26,8 @@ class HGet(BasicProtocol):
 
 class HMSet(BasicProtocol):
     command = 'HMSET'
-    def __init__(self, base: str, key: str, value: str):
-        super().__init__(base, key, value)
+    def __init__(self, base: str, *queries):
+        super().__init__(base, *queries)
 
 class HMGet(BasicProtocol):
     command = 'HMGET'
