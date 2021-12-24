@@ -44,7 +44,7 @@ class Route:
         if not args:
             raise RedisException('No arguments were passed for {}'.format(self._protocol.command))
         arg = " ".join(args)
-        command_formatted = f"${len(self.command)}{CRLF}{arg}{CRLF}"
+        command_formatted = f"${len(self._protocol.command)}{CRLF}{arg}{CRLF}"
         return command_formatted.encode('utf-8')
 
 class Query():
