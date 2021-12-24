@@ -15,6 +15,6 @@ class Get(BasicProtocol):
         super().__init__(key)
 
 class Delete(BasicProtocol):
-    command = 'DELETE'
+    command = 'DEL'
     def __init__(self, *keys: str):
         super().__init__(*keys)
