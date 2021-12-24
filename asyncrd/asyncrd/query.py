@@ -1,11 +1,11 @@
-from .models import BasicProtocol, Get, Set
+from .models import BasicProtocol, Get, Set, Delete
 from typing import Union
 from .exceptions import RedisException
 from .encoders import _encode_command_string, _encode_array, _encode_bulk_string, _encode_integer
 from redis_protocol import decode as decoder
     
 class Route:
-    def __init__(self, protocol: Union[Get, Set, BasicProtocol]) -> None:
+    def __init__(self, protocol: Union[Delete, Get, Set, BasicProtocol]) -> None:
         self._protocol = protocol
 
     def format_command(self, *args):
@@ -43,7 +43,7 @@ class Query():
         data = await self.reader.read(100)
         return decoder(data.decode('utf-8'))
         
-    async def do_query(self, protocol : Union[Get, Set, BasicProtocol]):
+    async def do_query(self, protocol : Union[Delete, Get, Set, BasicProtocol]):
         res = await self._execute_command(protocol)
         return res
     

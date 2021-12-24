@@ -1,8 +1,16 @@
-from typing import Optional, Tuple
-import asyncio, socket
-from urllib.parse import urlparse
-from .models import Query, Get, Set, Delete
+import asyncio
+
+from .models import (
+    Get, 
+    Set, 
+    Delete
+)
+
+from .query import Query
 from .exceptions import RedisException
+
+from typing import Optional, Tuple
+from urllib.parse import urlparse
 
 
 class ConnectionProtocol():
