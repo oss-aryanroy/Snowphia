@@ -47,8 +47,6 @@ class Query():
         self.writer.write(data_)
         await self.writer.drain()
         data = await self.reader.read(100)
-        catching = CatchException(text=data.decode('utf-8'))
-        catching.catch_error()
         return decoder(data) 
         
     async def do_query(self, protocol : typing.Union[Get, Set, BasicProtocol]):
