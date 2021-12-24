@@ -1,30 +1,9 @@
-from typing import Tuple, Union
+from .models import BasicProtocol, Get, Set
+from typing import Union
 from .exceptions import RedisException
-from .encoders import _encode_command_string, _encode_array, _encode_bulk_string, _encode_error, _encode_integer, _encode_simple_string
+from .encoders import _encode_command_string, _encode_array, _encode_bulk_string, _encode_integer
 from redis_protocol import decode as decoder
-
-
-
-class Result():
-    def __init__(self, result : str):
-        self.result : str = result          
     
-class BasicProtocol():    
-    def __init__(self, *query : str):
-        self.query : Tuple[str] = query
-
-class Set(BasicProtocol):
-    command = 'SET'
-    def __init__(self, key: str, value: str):
-        super().__init__(key, value)
-            
-class Get(BasicProtocol):
-    command = 'GET'
-    def __init__(self, key: str):
-        super().__init__(key)
-
-
-
 class Route:
     def __init__(self, protocol: Union[Get, Set, BasicProtocol]) -> None:
         self._protocol = protocol
@@ -46,6 +25,7 @@ class Route:
             to_pass_args.append(parsed_arg)
         command_string = _encode_array(to_pass_args)
         return command_string
+
 
 class Query():
     def __init__(self, connection):

@@ -1,7 +1,9 @@
+from typing import Optional, Tuple
 import asyncio, socket
 from urllib.parse import urlparse
 from .query import Query, Get, Set, BasicProtocol
 from .exceptions import RedisException
+
 
 class ConnectionProtocol():
     def __init__(self, connection_url : str):
@@ -14,15 +16,14 @@ class ConnectionProtocol():
         
         self._closed = False
         self._connected = False
-        
+
     async def connect(self):
         if self._connected:
             raise RedisException('Connected to redis database.')
-            
         self.reader, self.writer = await asyncio.open_connection(self.hostname, self.port)
         self._connected = True
         
-    async def close(self):
+    async def close(self) ->None:
         if self._closed:
             raise RedisException('Connection is closed.')
             
@@ -30,7 +31,7 @@ class ConnectionProtocol():
         await self.writer.wait_closed()
         self._closed = True
         
-    async def __aenter__(self):
+    async def __aenter__(self) -> None:
         try:
             await self.connect()
         except:
@@ -38,35 +39,36 @@ class ConnectionProtocol():
         
         return self
     
-    async def __aexit__(self, exc_type, exc_value, traceback):
+    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
         try:
             await self.close()
         except:
             pass
         
-    async def _do_connect_check(self):
+    async def _do_connect_check(self) -> None:
         try:
             if not self._connected:
                 await self.connect()
         except:
             pass
-        
-    def create_custom_protocol(self, command: str, query: str):
-        protocol = BasicProtocol(query=query)
-        protocol.command = command
-        
-        return protocol
-        
-    async def get(self, query : str):
+
+    async def get(self, query : str) -> Optional[str]:
         await self._do_connect_check()
         
         data = Query(self)
         result = await data.do_query(Get(query))
         return result
 
-    async def set(self, key: str, value: str):
+    async def set(self, key: str, value: str) -> Tuple[bool, str]:
         await self._do_connect_check()
         
         data = Query(self)
         result = await data.do_query(Set(key, value))
+        return result
+
+    async def delete(self, *keys) -> Tuple[bool, str]:
+        await self._do_connect_check()
+        
+        data = Query(self)
+        result = await data.do_query(Set(*keys))
         return result
