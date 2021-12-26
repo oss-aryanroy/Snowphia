@@ -5,6 +5,7 @@ import asyncpg
 import config
 import aiohttp
 import discord
+from utils.context import CustomContext
 from discord.ext import commands
 from jishaku.codeblocks import codeblock_converter
 
@@ -21,6 +22,9 @@ class SnowBot(commands.AutoShardedBot):
     async def start(self, *args, **kwargs):
         async with aiohttp.ClientSession() as self.session:
             await super().start(*args, **kwargs)
+
+    async def get_context(self, message, *, cls=CustomContext):
+        return await super().get_context(message, cls=cls)
 
     async def create_db_pool(self):
         self.pg_con = await asyncpg.create_pool(**config.CREDENTIALS)
