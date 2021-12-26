@@ -41,29 +41,9 @@ class UTC(tzinfo):
     def dst(self, dt) -> timedelta:
         return ZERO
 
-
-class VishAPI:
-    __slots__ = ('api_key', 'bot', 'member')
-
-    def __init__(self, bot, member) -> None:
-        self.api_key = config.VISHAPI
-        self.bot = bot
-        self.member = member
-
-    async def get_embed(self, endpoint: str, **kwargs) -> Tuple[discord.Embed, discord.File]:
-        headers = {"Authorization": self.api_key}
-        session = await self.bot.session.get(f"https://api.kozumikku.tech/image/{endpoint}", params=kwargs,
-                                             headers=headers)
-        print(session.status)
-        file = discord.File(BytesIO(await session.read()), filename=f"{endpoint}.png")
-        embed = discord.Embed(title=f"{endpoint.title()}-ed Image for {self.member.name}", color=self.bot.theme)
-        embed.set_image(url=f"attachment://{endpoint}.png")
-        return embed, file
-
-
 class Spotify:
     __slots__ = ('member', 'bot', 'embed', 'regex', 'headers', 'counter')
-
+    
     def __init__(self, *, bot, member) -> None:
         self.member = member
         self.bot = bot

@@ -1,6 +1,7 @@
 ﻿import os
 import asyncio
 import aioredis
+import asyncpg
 import config
 import aiohttp
 import discord
@@ -20,6 +21,9 @@ class SnowBot(commands.AutoShardedBot):
     async def start(self, *args, **kwargs):
         async with aiohttp.ClientSession() as self.session:
             await super().start(*args, **kwargs)
+
+    async def create_db_pool(self):
+        self.pg_con = await asyncpg.create_pool(**config.CREDENTIALS)
 
     async def startup_task(self) -> None:
         await self.wait_until_ready()
@@ -114,6 +118,7 @@ for filename in os.listdir('./cogs'):
         client.load_extension(f'cogs.{filename[:-3]}')
 
 try:
+    client.loop.run_until_complete(client.create_db_pool())
     client.loop.create_task(client.startup_task())
     client.run(config.TOKEN)
 except discord.LoginFailure:
