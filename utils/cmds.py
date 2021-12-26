@@ -7,7 +7,7 @@ import discord
 import datetime
 import functools
 from io import BytesIO
-from typing import Tuple
+from typing import Tuple, NamedTuple
 from colorthief import ColorThief
 from datetime import datetime as dt
 from datetime import timedelta, tzinfo
@@ -225,3 +225,8 @@ def get_picture(image: BytesIO, size: Tuple[int, int] = None):
     im.save(buffer, "PNG")
     buffer.seek(0)
     return buffer
+
+class Cached(NamedTuple):
+    prefix: str
+
+

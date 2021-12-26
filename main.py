@@ -5,19 +5,67 @@ import asyncpg
 import config
 import aiohttp
 import discord
+from typing import Optional
+from utils.cmds import Cached
 from utils.context import CustomContext
 from discord.ext import commands
 from jishaku.codeblocks import codeblock_converter
 
 
+
+
+async def get_prefix(bot, message: discord.Message):
+    await bot.wait_until_ready()
+    request = bot.check_for_cache(message.guild)
+    if request == 1:
+        prefix = await bot.make_original_request(message)
+    elif request == 2:
+        prefix = "sn!"
+    else:
+        prefix = request
+    return prefix
+    
+    
 class SnowBot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.theme = 0xb1e6fc
         self.redis = aioredis.StrictRedis(decode_responses=True)
+        self.pg_con = None
         self.spotify_client_id = config.SPOTIFY_CLIENT_ID
         self.spotify_client_secret = config.SPOTIFY_CLIENT_SECRET
+        self.cache = {}
         self.spotify_session = None
+
+    def input_cache(self, guild: discord.Guild, prefix: Optional[str]):
+        self.cache[guild.id] = Cached(prefix)
+
+    def check_for_cache(self, guild: discord.Guild):
+        object_ = self.cache.get(guild.id, 0)
+        if object_ == 0:
+            return 1
+        elif object_ == None:
+            return 2
+        else:
+            return object_.prefix
+
+    async def make_original_request(self, message):
+        prefix = await self.make_request(message)
+        if not prefix:
+            self.input_cache(message.guild)
+            return "sn!"
+        self.input_cache(message.guild, prefix)
+        return prefix
+
+    async def make_request(self, message: discord.Message):
+        pool = self.pg_con.acquire()
+        async with pool as session:
+            prefix = await session.fetchrow("SELECT * FROM guild_info WHERE guild_id=$1", message.guild.id)
+            if not prefix:
+                value = False
+            else:
+                value = prefix.get('prefix')
+        return value
 
     async def start(self, *args, **kwargs):
         async with aiohttp.ClientSession() as self.session:
@@ -57,13 +105,6 @@ class SnowBot(commands.AutoShardedBot):
 
     def __str__(self):
         return client.user.name
-
-
-async def get_prefix(bot: SnowBot, message: discord.Message):
-    if client.debugger and await bot.is_owner(message.author):
-        return ['', 'sn!']
-    else:
-        return ['sn!',]
 
 
 intents = discord.Intents.all()
@@ -107,7 +148,7 @@ async def restart(ctx: commands.Context):
     await client.close()
 
 
-@client.command(hidden=True)
+@client.command(hidden=True, aliases=['update',])
 @commands.is_owner()
 async def gitpull(ctx: commands.Context):
     command = client.get_command('jsk sh')
