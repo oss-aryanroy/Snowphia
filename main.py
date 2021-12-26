@@ -44,10 +44,11 @@ class SnowBot(commands.AutoShardedBot):
         object_ = self.cache.get(guild.id, 0)
         if object_ == 0:
             return 1
-        elif object_ == None:
+        prefix = object_.prefix
+        if not prefix:
             return 2
         else:
-            return object_.prefix
+            prefix
 
     async def make_original_request(self, message):
         prefix = await self.make_request(message)
