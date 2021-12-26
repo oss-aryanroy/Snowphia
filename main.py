@@ -37,7 +37,7 @@ class SnowBot(commands.AutoShardedBot):
         self.cache = {}
         self.spotify_session = None
 
-    def input_cache(self, guild: discord.Guild, prefix: Optional[str]):
+    def input_cache(self, guild: discord.Guild, prefix: str = None):
         self.cache[guild.id] = Cached(prefix)
 
     def check_for_cache(self, guild: discord.Guild):
