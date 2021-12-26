@@ -27,6 +27,8 @@ async def get_prefix(bot, message: discord.Message):
     
     
 class SnowBot(commands.AutoShardedBot):
+    __slots__ = ('theme', 'redis', 'pg_con', 'spotify_client_id', 'spotify_client_secret', 'cache', 'spotify_session')
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.theme = 0xb1e6fc
