@@ -7,7 +7,7 @@ import discord
 import datetime
 import functools
 from io import BytesIO
-from typing import Tuple, NamedTuple
+from typing import Tuple
 from dataclasses import dataclass
 from colorthief import ColorThief
 from datetime import datetime as dt

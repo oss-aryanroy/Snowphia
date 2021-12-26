@@ -1,5 +1,4 @@
 from discord.ext import commands
-from h11 import Data
 from db import Database
 
 class CustomContext(commands.Context):
