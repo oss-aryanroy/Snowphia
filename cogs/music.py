@@ -1,8 +1,7 @@
 import re
 import discord
-from discord.ext.commands.core import after_invoke
 import lavalink
-from typing import Union
+from typing import Union, Optional
 from discord.ext import commands
 
 url_rx = re.compile(r'https?://(?:www\.)?.+')
@@ -148,6 +147,21 @@ class Music(commands.Cog):
     async def on_lavalink_track_start(self, player: lavalink.BasePlayer, track):
         guild = self.bot.get_guild(int(player.guild_id))
         await self.create_embed(guild, track)
+
+
+    @commands.command()
+    async def volume(self, ctx: commands.Context, volume: Optional[int]):
+        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        if not player:
+            return await ctx.reply("Not playing anything currently")
+        if not volume:
+            return await ctx.reply(f'Current volume is `{player.volume}%`')
+        if volume < 20:
+            return await ctx.send("Cannot set volume less than `20%`")
+        elif volume > 200:
+            return await ctx.send("Cannot set volume more than `200%`")
+        await player.set_volume(volume)
+
 
 
     @commands.command(aliases=['p'])
