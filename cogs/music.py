@@ -174,7 +174,10 @@ class Music(commands.Cog):
             track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True, channel_id=ctx.channel.id)
             player.add(requester=ctx.author.id, track=track)
         await ctx.send(embed=embed)
-        await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
+        try:
+            await ctx.message.add_reaction('<a:PurpleCheck:922496654739902474>')
+        except discord.NotFound:
+            pass
         if not player.is_playing:
             await player.play()
 

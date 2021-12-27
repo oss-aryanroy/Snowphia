@@ -45,6 +45,16 @@ class Spotify:
     __slots__ = ('member', 'bot', 'embed', 'regex', 'headers', 'counter')
     
     def __init__(self, *, bot, member) -> None:
+        """
+        Class that represents a Spotify object, used for creating listening embeds
+
+        Parameters:
+        ----------------
+        bot : commands.Bot
+            represents the Bot object
+        member : discord.Member
+            represents the Member object whose spotify listening is to be handled
+        """
         self.member = member
         self.bot = bot
         self.embed = discord.Embed(title=f"{member.display_name} is Listening to Spotify", color=self.bot.theme)
@@ -55,6 +65,24 @@ class Spotify:
         self.counter = 0
 
     async def request_pass(self, *, track_id: str):
+        """
+        Requests for a list of artists from the spotify API
+
+        Parameters:
+        ----------------
+            track_id : str
+                Spotify track's id
+
+        Returns
+        ----------------
+        list
+            A list of artist details
+
+        Raises
+        ----------------
+        Exception
+            If Spotify API is down
+        """
         try:
             headers = {"Authorization":
                            f'Basic {base64.urlsafe_b64encode(f"{self.bot.spotify_client_id}:{self.bot.spotify_client_secret}".encode()).decode()}',
@@ -96,7 +124,30 @@ class Spotify:
 
     @staticmethod
     @executor()
-    def pil_process(pic, name, artists, time, time_at, track):
+    def pil_process(pic, name, artists, time, time_at, track) -> discord.File:
+        """
+        Makes an image with spotify album cover with Pillow
+        
+        Parameters:
+        ----------------
+        pic : BytesIO
+            BytesIO object of the album cover
+        name : str
+            Name of the song
+        artists : list
+            Name(s) of the Artists
+        time : int
+            Total duration of song in seconds
+        time_at : int
+            Total duration into the song in seconds
+        track : int
+            Offset for covering the played bar portion
+
+        Returns
+        ----------------
+        discord.File
+            contains the spotify image
+        """
         s = ColorThief(pic)
         color = s.get_palette(color_count=2)
         result = Image.new('RGBA', (575, 170))
@@ -124,6 +175,21 @@ class Spotify:
         return discord.File(fp=output, filename="spotify.png")
 
     async def get_from_local(self, bot, act: discord.Spotify) -> discord.File:
+        """
+        Makes an image with spotify album cover with Pillow
+        
+        Parameters:
+        ----------------
+        bot : commands.Bot
+            represents our Bot object
+        act : discord.Spotify
+            activity object to get information from
+
+        Returns
+        ----------------
+        discord.File
+            contains the spotify image
+        """
         s = tuple(f"{string.ascii_letters}{string.digits}{string.punctuation} ")
         artists = ', '.join(act.artists)
         artists = ''.join([x for x in artists if x in s])
@@ -142,6 +208,21 @@ class Spotify:
 
     @staticmethod
     async def fetch_from_api(bot, activity: discord.Spotify):
+        """
+        Request an image for spotify from Jeyy API
+        
+        Parameters:
+        ----------------
+        bot : commands.Bot
+            represents our Bot object
+        activity : discord.Spotify
+            activity object to get information from
+
+        Returns
+        ----------------
+        discord.File
+            contains the spotify image
+        """
         act = activity
         base_url = "https://api.jeyy.xyz/discord/spotify"
         params = {'title': act.album, 'cover_url': act.album_cover_url, 'artists': act.artists[0],
@@ -150,7 +231,20 @@ class Spotify:
         buffer = BytesIO(await connection.read())
         return discord.File(fp=buffer, filename="spotify.png")
 
-    async def send_backup_artist_request(self, activity):
+    async def send_backup_artist_request(self, activity: discord.Spotify):
+        """
+        Backup request if spotify API is down
+        
+        Parameters:
+        ----------------
+        activity : discord.Spotify
+            activity object to get information from
+
+        Returns
+        ----------------
+        str
+            the names of the artists and their artist links respectively
+        """
         artists = activity.artists
         url = activity.track_url
         result = await self.bot.session.get(url, headers=self.headers)
@@ -163,6 +257,14 @@ class Spotify:
         return final_string
 
     async def get_embed(self) -> Tuple[discord.Embed, discord.File]:
+        """
+        Creates the Embed object
+        
+        Returns
+        ----------------
+        Tuple[discord.Embed, discord.File]
+            the embed object and the file with spotify image
+        """
         activity = discord.utils.find(lambda activity: isinstance(activity, discord.Spotify), self.member.activities)
         if not activity:
             return False
