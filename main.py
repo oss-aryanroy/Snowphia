@@ -152,6 +152,7 @@ async def restart(ctx: CustomContext):
     await client.close()
 
 @client.command()
+@commands.has_permissions(manage_guild=True)
 async def setprefix(ctx: CustomContext, string: Optional[str]):  
     if string == ctx.prefix:
         return await ctx.reply(f'Mention a new prefix, `{ctx.prefix}` is your current prefix...')
