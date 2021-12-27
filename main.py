@@ -49,7 +49,7 @@ class SnowBot(commands.AutoShardedBot):
         if not prefix:
             return 2
         else:
-            prefix
+            return prefix
 
     async def make_original_request(self, message):
         prefix = await self.make_request(message)
