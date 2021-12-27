@@ -1,5 +1,5 @@
 from discord.ext import commands
-from db import Database
+from utils.db import Database
 
 class CustomContext(commands.Context):
     __slots__ = ('db',)
