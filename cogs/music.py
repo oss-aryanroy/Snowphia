@@ -161,6 +161,7 @@ class Music(commands.Cog):
         elif volume > 200:
             return await ctx.send("Cannot set volume more than `200%`")
         await player.set_volume(volume)
+        await ctx.reply(f'Successfully set volume to `{volume}%`')
 
 
 
