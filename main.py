@@ -5,13 +5,12 @@ import asyncpg
 import config
 import aiohttp
 import discord
+from typing import Optional
 from utils.cmds import Cached
 from utils.context import CustomContext
+from utils.buttons import PrefixConfirm
 from discord.ext import commands
 from jishaku.codeblocks import codeblock_converter
-
-
-
 
 async def get_prefix(bot, message: discord.Message):
     await bot.wait_until_ready()
@@ -38,6 +37,12 @@ class SnowBot(commands.AutoShardedBot):
         self.cache = {}
         self.spotify_session = None
 
+    def update_cache(self, guild: discord.Guild, prefix: str = None):
+        try:
+            self.cache[guild.id].prefix = prefix
+        except KeyError:
+            self.input_cache(guild, prefix)
+
     def input_cache(self, guild: discord.Guild, prefix: str = None):
         self.cache[guild.id] = Cached(prefix)
 
@@ -59,7 +64,7 @@ class SnowBot(commands.AutoShardedBot):
     async def make_request(self, message: discord.Message):
         pool = self.pg_con.acquire()
         async with pool as session:
-            prefix = await session.fetchrow("SELECT * FROM guild_info WHERE guild_id=$1", message.guild.id)
+            prefix = await session.fetchrow("SELECT * FROM guild_info WHERE guild_id = $1", message.guild.id)
             if not prefix:
                 value = False
             else:
@@ -114,13 +119,13 @@ client.debugger = False
 
 
 @client.command(hidden=True)
-async def debugger(ctx: commands.Context, value: bool):
+async def debugger(ctx: CustomContext, value: bool):
     client.debugger = value
     return await ctx.reply(f"{'Activated' if value else 'Unactivated'} Debugging mode")
 
 
 @debugger.error
-async def debugger_error(ctx: commands.Context, error: commands.CommandError):
+async def debugger_error(ctx: CustomContext, error: commands.CommandError):
     if isinstance(error, commands.BadArgument):
         print("Something went wrong...")
         print(str(error))
@@ -128,7 +133,7 @@ async def debugger_error(ctx: commands.Context, error: commands.CommandError):
 
 @client.command(hidden=True)
 @commands.is_owner()
-async def cleanup(ctx: commands.Context, amount: int = 10):
+async def cleanup(ctx: CustomContext, amount: int = 10):
     def check(m):
         return m.author == client.user
 
@@ -137,7 +142,7 @@ async def cleanup(ctx: commands.Context, amount: int = 10):
 
 @client.command(hidden=True)
 @commands.is_owner()
-async def restart(ctx: commands.Context):
+async def restart(ctx: CustomContext):
     await client.redis.hset("restart", "guild_id", ctx.guild.id)
     await client.redis.hset("restart", "channel_id", ctx.channel.id)
     embed = discord.Embed(title="Restarting...", description="Hold on, restarting the bot!")
@@ -146,10 +151,31 @@ async def restart(ctx: commands.Context):
     await client.redis.hset("restart", "to_send", 1)
     await client.close()
 
+@client.command()
+async def setprefix(ctx: CustomContext, string: Optional[str]):  
+    if string == ctx.prefix:
+        return await ctx.reply(f'Mention a new prefix, `{ctx.prefix}` is your current prefix...')
+    request = client.check_for_cache(ctx.guild)
+    if not string:
+        if request == 2:
+            line = f"You are currently using the default prefix `{ctx.prefix}`"
+            return await ctx.reply(line, mention_author=False)
+        else:
+            line = f"The current prefix for this server is `{request}`, reset it to default?"
+            view = PrefixConfirm(ctx, None)
+            view.message = await ctx.reply(line, view=view, mention_author=False)
+        return
+    view = PrefixConfirm(ctx, string)
+    if request == 2:
+        line = f"You are currently using the default prefix `{ctx.prefix}`, switch to `{string}`?"
+        view.message = await ctx.reply(line, mention_author=False, view=view)
+    else:
+        line = f"You are currently using `{ctx.prefix}` as your prefix, switch to `{string}`?"
+        view.message = await ctx.reply(line, mention_author=False, view=view)
 
 @client.command(hidden=True, aliases=['update',])
 @commands.is_owner()
-async def gitpull(ctx: commands.Context):
+async def gitpull(ctx: CustomContext):
     command = client.get_command('jsk sh')
     await ctx.invoke(command, argument=codeblock_converter("sudo git pull"))
     await asyncio.sleep(2.0)

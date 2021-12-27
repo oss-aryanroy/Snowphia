@@ -1,6 +1,8 @@
 import discord
 from typing import Optional
 from discord.ext import commands
+from utils.context import CustomContext
+
 
 
 class SpotifyButton(discord.ui.View):
@@ -57,3 +59,49 @@ class ButtonDelete(discord.ui.View):
     async def buttondelete(self, button: discord.ui.Button, interaction: discord.Interaction):
         await self.context.message.add_reaction("<:GreenTick:919192513611431946>")
         await interaction.message.delete()
+
+class PrefixConfirm(discord.ui.View):
+    def __init__(self, ctx: CustomContext, prefix: str, *, timeout: Optional[float] = 180):
+        super().__init__(timeout=timeout)
+        self.prefix = prefix
+        self.context = ctx
+
+    async def on_timeout(self):
+        self.confirm.disabled = True
+        self.abort.disabled = True
+        await self.message.edit(view=self)
+
+    async def disable_all(self, content: str):
+        self.confirm.disabled = True
+        self.abort.disabled = True
+        try:
+            await self.message.edit(content=content, view=self)
+        except (discord.NotFound, discord.HTTPException):
+            pass
+        self.stop()
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user == self.context.author:
+            return True
+        else:
+            em = discord.Embed(title="Begone!",
+                               description=f"This is not yours, only **`{self.context.author.name}`** can use this button.")
+            await interaction.response.send_message(embed=em, ephemeral=True)
+            return False
+            
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.defer()
+        args = """INSERT INTO guild_info(guild_id, prefix)
+                  VALUES ($1, $2)
+                  ON CONFLICT(guild_id)
+                  DO UPDATE SET prefix = $2"""
+        await self.context.db.execute(args, self.context.guild.id, self.prefix)
+        prefix = self.prefix if self.prefix else 'sn!'
+        self.context.bot.update_cache(self.context.guild, self.prefix)
+        await self.disable_all(f'Your prefix has been successfully set to `{prefix}`')
+        
+
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
+    async def abort(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.disable_all('Aborting setting a new prefx...')
