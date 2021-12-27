@@ -75,7 +75,7 @@ class PrefixConfirm(discord.ui.View):
         self.confirm.disabled = True
         self.abort.disabled = True
         try:
-            await self.message.edit(content=content, view=self)
+            await self.message.edit(content=content, view=self, mention_author=False)
         except (discord.NotFound, discord.HTTPException):
             pass
         self.stop()
