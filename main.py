@@ -17,7 +17,7 @@ async def get_prefix(bot, message: discord.Message):
     await bot.wait_until_ready()
     request = bot.check_for_cache(message.guild)
     if request == 1:
-        prefix = await bot.make_original_request(message)
+        prefix = await bot.make_cache_request(message)
     elif request == 2:
         prefix = "sn!"
     else:
@@ -46,12 +46,9 @@ class SnowBot(commands.AutoShardedBot):
         if object_ == 0:
             return 1
         prefix = object_.prefix
-        if not prefix:
-            return 2
-        else:
-            return prefix
+        return 2 if not prefix else prefix
 
-    async def make_original_request(self, message):
+    async def make_cache_request(self, message):
         prefix = await self.make_request(message)
         if not prefix:
             self.input_cache(message.guild)
