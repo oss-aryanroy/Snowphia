@@ -265,7 +265,7 @@ class MyUtils(commands.Cog):
             embed = await spotify.get_embed()
             if not embed:
                 if member == ctx.author:
-                    return await ctx.send(f"You are currently not listening to spotify!", mention_author=False)
+                    return await ctx.reply(f"You are currently not listening to spotify!", mention_author=False)
                 return await ctx.reply(f"{member.mention} is not listening to Spotify", mention_author=False,
                                        allowed_mentions=discord.AllowedMentions(users=False))
             activity = discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities)
