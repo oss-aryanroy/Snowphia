@@ -8,7 +8,7 @@ import humanize
 import discord
 
 
-class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
+class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES, command_attrs=dict(hidden=True)):
 
     @Feature.Command(name="jishaku", aliases=["jsk"], invoke_without_command=True, ignore_extra=False)
     async def jsk(self, ctx):

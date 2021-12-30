@@ -39,8 +39,10 @@ class HelpClass(commands.HelpCommand):
         embed = discord.Embed(title=f"Help for {self.context.bot}", color=self.context.bot.theme, timestamp=datetime.datetime.utcnow())
         embed.set_footer(text=f"Requested By: {self.context.author.display_name}")
         for cog, commands in mapping.items():
+            if cog and cog.__class__.__cog_settings__.get('hidden'):
+                continue  
             cog_name = cog.qualified_name if cog else 'Miscellaneous'
-            list_of_commands = ', '.join([f"`{command.name}`" for command in commands])
+            list_of_commands = ', '.join([f"`{command.name}`" for command in commands if not command.hidden])
             embed.add_field(name=cog_name, value=list_of_commands)
         channel = self.get_destination()
         await channel.send(embed=embed)
@@ -83,7 +85,7 @@ class HelpClass(commands.HelpCommand):
         await channel.send(embed=embed)
         
 
-class HelpCog(commands.Cog):
+class HelpCog(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         """
         Cog Subclass for registering HelpClass
