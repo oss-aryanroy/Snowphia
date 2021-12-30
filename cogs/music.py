@@ -231,7 +231,6 @@ class Music(commands.Cog):
         else:
             await ctx.send("Player is already playing!")
 
-
     @commands.command()
     async def stop(self, ctx: commands.Context):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
