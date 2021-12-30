@@ -37,6 +37,7 @@ class HelpClass(commands.HelpCommand):
     
     async def send_bot_help(self, mapping):
         embed = discord.Embed(title=f"Help for {self.context.bot}", color=self.context.bot.theme, timestamp=datetime.datetime.utcnow())
+        embed.description = f"Use `{self.context.prefix}help <command>` for help with a specific command."
         embed.set_footer(text=f"Requested By: {self.context.author.display_name}")
         for cog, commands in mapping.items():
             if cog and cog.__class__.__cog_settings__.get('hidden'):
