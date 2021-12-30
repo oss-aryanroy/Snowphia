@@ -35,6 +35,16 @@ class HelpClass(commands.HelpCommand):
         embed.set_footer(text=f"Request by: {self.context.author.name}")
         await channel.send(embed=embed)
     
+    async def send_bot_help(self, mapping):
+        embed = discord.Embed(title=f"Help for {self.context.bot}", color=self.context.bot.theme, timestamp=datetime.datetime.utcnow())
+        embed.set_footer(text=f"Requested By: {self.context.author.display_name}")
+        for cog, commands in mapping.items():
+            cog_name = cog.qualified_name if cog else 'Miscellaneous'
+            list_of_commands = ', '.join([f"`{command.name}`" for command in commands])
+            embed.add_field(name=cog_name, value=list_of_commands)
+        channel = self.get_destination()
+        await channel.send(embed=embed)
+    
     async def send_cog_help(self, cog: commands.Cog):
         string = ""
         cog_name = cog.qualified_name if cog else 'Miscellaneous'
@@ -65,11 +75,11 @@ class HelpClass(commands.HelpCommand):
                 string += some_string + "\n"
         new_split = [x.split() for x in string.split('\n')]
         new_order = sorted(new_split, key=len)
-        new = [' '.join(lines) for lines in new_order]
+        new = map(' '.join, new_order)
         string = '\n'.join(new)
         embed.description += f"```css\n{string}\n```"
         channel = self.get_destination()
-        embed.set_footer(text=f"Request by: {self.context.author.name}")
+        embed.set_footer(text=f"Request by: {self.context.author.display_name}")
         await channel.send(embed=embed)
         
 
