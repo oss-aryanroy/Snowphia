@@ -65,7 +65,7 @@ class HelpClass(commands.HelpCommand):
                 string += some_string + "\n"
         new_split = [x.split() for x in string.split('\n')]
         new_order = sorted(new_split, key=len)
-        new = map(' '.join, new_order)
+        new = [' '.join(lines) for lines in new_order]
         string = '\n'.join(new)
         embed.description += f"```css\n{string}\n```"
         channel = self.get_destination()
